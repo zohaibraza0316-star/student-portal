@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Raza Tutors — Enterprise Quran Academy Portal</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="min-h-screen flex bg-slate-100">
+
+  <!-- LEFT COLLAPSIBLE SLIDER SIDEBAR -->
+  <aside id="sidebarContainer" class="sidebar-panel bg-slate-900 text-white flex flex-col justify-between shrink-0 min-h-screen sticky top-0 z-40 select-none">
+    <div>
+      <!-- Brand Header -->
+      <div class="p-4 flex items-center justify-between border-b border-slate-800">
+        <div class="flex items-center gap-3 overflow-hidden">
+          <img id="sidebarBrandLogo" src="" alt="Logo" class="hidden w-10 h-10 rounded-xl object-cover border border-indigo-400 shrink-0 bg-white" />
+          <div id="sidebarDefaultIcon" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-emerald-500 flex items-center justify-center text-white font-bold shadow-md shrink-0">
+            RT
+          </div>
+          <div class="brand-text overflow-hidden">
+            <h1 id="sidebarAcademyName" class="text-sm font-extrabold tracking-tight text-white truncate">Raza Tutors</h1>
+            <p class="text-[11px] text-emerald-400 font-semibold">IndexedDB Pro v4</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="p-2.5 space-y-1">
+        <button type="button" data-tab="students" class="tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition tab-btn-active" title="Students Directory">
+          <span class="text-base">👥</span>
+          <span class="nav-label">Students Directory</span>
+        </button>
+        <button type="button" data-tab="sabaq" class="tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition tab-btn-inactive" title="Sabaq & Timetable">
+          <span class="text-base">📖</span>
+          <span class="nav-label">Sabaq &amp; Timetable</span>
+        </button>
+        <button type="button" data-tab="attendance" class="tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition tab-btn-inactive" title="Daily Attendance">
+          <span class="text-base">📅</span>
+          <span class="nav-label">Daily Attendance</span>
+        </button>
+        <button type="button" data-tab="fees" class="tab-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition tab-btn-inactive" title="Monthly Fees">
+          <div class="flex items-center gap-3">
+            <span class="text-base">💳</span>
+            <span class="nav-label">Monthly Fees</span>
+          </div>
+          <span id="navBadgePendingProofs" class="hidden px-1.5 py-0.5 rounded-full text-[10px] bg-rose-600 text-white font-bold">0</span>
+        </button>
+        <button type="button" data-tab="expenses" class="tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition tab-btn-inactive" title="Expenses & Snapshots">
+          <span class="text-base">📉</span>
+          <span class="nav-label">Expenses &amp; Snapshots</span>
+        </button>
+        <button type="button" data-tab="salaries" class="tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition tab-btn-inactive" title="Teachers Salary">
+          <span class="text-base">💼</span>
+          <span class="nav-label">Teachers Salary</span>
+        </button>
+        <button type="button" data-tab="demos" class="tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition tab-btn-inactive" title="Demo Classes">
+          <span class="text-base">🎯</span>
+          <span class="nav-label">Trial / Demo Classes</span>
+        </button>
+        <button type="button" data-tab="marks" class="tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition tab-btn-inactive" title="Tests & Evaluations">
+          <span class="text-base">🏆</span>
+          <span class="nav-label">Evaluations</span>
+        </button>
+        <button type="button" data-tab="parentview" class="tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition tab-btn-inactive" title="Student Report & Fee Proof">
+          <span class="text-base">🧾</span>
+          <span class="nav-label">Student Report &amp; Proof</span>
+        </button>
+        <button type="button" data-tab="reports" class="tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition tab-btn-inactive" title="Reports & Analytics">
+          <span class="text-base">📊</span>
+          <span class="nav-label">10 PDF Reports &amp; Charts</span>
+        </button>
+        <button id="tabBtnAdmin" type="button" data-tab="admin" class="tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition tab-btn-inactive" title="Admin & Branding">
+          <span class="text-base">⚙️</span>
+          <span class="nav-label">Admin &amp; Logo Setup</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Bottom User Info -->
+    <div class="p-3 border-t border-slate-800 text-xs text-slate-400 brand-text">
+      <div class="truncate">Logged in: <strong id="loggedInUserName" class="text-white">Admin</strong></div>
+      <div id="loggedInUserRole" class="text-[10px] text-indigo-400 font-semibold mt-0.5">Super Admin</div>
+    </div>
+  </aside>
+
+  <!-- RIGHT MAIN WORKSPACE -->
+  <div class="flex-1 flex flex-col min-w-0">
+
+    <!-- Top Sticky Bar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+      <div class="px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <button id="btnToggleSidebar" type="button" class="p-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition font-bold text-sm" title="Toggle Full-Width Slider">
+            ☰
+          </button>
+          <div>
+            <h2 id="topBarTitle" class="text-base sm:text-lg font-extrabold text-slate-900">Academy Dashboard</h2>
+            <p id="topBarContacts" class="text-[11px] text-slate-500">Storage: IndexedDB (Unlimited) • Instant Backup Compatible</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Financial Privacy Lock Button -->
+          <button id="btnToggleFinLock" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold bg-amber-50 text-amber-800 border border-amber-300 hover:bg-amber-100 transition">
+            <span>🔒 Unlock Financials</span>
+          </button>
+
+          <button id="btnDarkModeToggle" type="button" class="px-3 py-2 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+            🌙 Dark
+          </button>
+          <button id="btnAddStudentTop" type="button" class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition shadow-sm">
+            + Add Student
+          </button>
+          <button id="btnExportCsv" type="button" class="px-3 py-2 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition">
+            Export CSV
+          </button>
+          <button id="btnBackupJson" type="button" class="px-3 py-2 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+            Backup JSON
+          </button>
+          <label for="inputRestoreJson" class="cursor-pointer px-3 py-2 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 transition">
+            Restore Old Backup
+            <input id="inputRestoreJson" type="file" accept=".json" class="hidden" />
+          </label>
+          <button id="btnLogout" type="button" class="px-3 py-2 rounded-lg text-xs font-semibold bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 transition">
+            Logout
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 p-4 sm:p-6 space-y-5 max-w-[1600px] w-full mx-auto">
+
+      <!-- KPI Summary Cards (With Financial Privacy Lock) -->
+      <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold text-slate-500 uppercase">Total Students</span>
+            <span class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">👥</span>
+          </div>
+          <p id="statTotalStudents" class="text-2xl font-extrabold text-slate-900 mt-1.5">0</p>
+          <p id="statActiveBreakdown" class="text-xs text-slate-500 mt-0.5">0 Active</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold text-slate-500 uppercase">Fees Collected</span>
+            <span class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs">₨</span>
+          </div>
+          <p id="statFeesCollected" class="text-2xl font-extrabold text-emerald-600 mt-1.5">••••••</p>
+          <p id="statFeeMonthLabel" class="text-xs text-slate-500 mt-0.5">Current Month</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold text-slate-500 uppercase">Pending Fees</span>
+            <span class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-xs">⏳</span>
+          </div>
+          <p id="statFeesPending" class="text-2xl font-extrabold text-amber-600 mt-1.5">••••••</p>
+          <p id="statUnpaidCount" class="text-xs text-slate-500 mt-0.5">0 pending</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold text-slate-500 uppercase">Month Expenses + Sal</span>
+            <span class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-xs">📉</span>
+          </div>
+          <p id="statTotalOutflow" class="text-2xl font-extrabold text-rose-600 mt-1.5">••••••</p>
+          <p id="statOutflowSub" class="text-xs text-slate-500 mt-0.5">Salaries + Bills</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs col-span-2 md:col-span-1">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold text-slate-500 uppercase">Net Profit</span>
+            <span class="w-7 h-7 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center font-bold text-xs">💎</span>
+          </div>
+          <p id="statNetProfit" class="text-2xl font-extrabold text-sky-600 mt-1.5">••••••</p>
+          <p id="statAttendanceRate" class="text-xs text-slate-500 mt-0.5">Attendance: 0%</p>
+        </div>
+      </section>
+
+      <!-- TAB 1: STUDENTS DIRECTORY (WITH DETAILED FILTERS & PAGINATION) -->
+      <section id="viewStudents" class="space-y-4">
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h3 class="text-sm font-bold text-slate-800 uppercase">Detailed Student Filters</h3>
+            <button id="btnResetStudentFilters" type="button" class="text-xs font-semibold text-indigo-600 hover:underline">Reset Filters</button>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2.5">
+            <input id="searchStudentsInput" type="text" placeholder="Search Name, Roll, Phone, Country..." class="lg:col-span-2 px-3.5 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm" />
+            <select id="filterClassSelect" class="px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm bg-white">
+              <option value="ALL">All Batches</option>
+            </select>
+            <select id="filterCourseSelect" class="px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm bg-white">
+              <option value="ALL">All Courses</option>
+            </select>
+            <select id="filterCurrencySelect" class="px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm bg-white">
+              <option value="ALL">All Currencies</option>
+              <option value="PKR">PKR</option>
+              <option value="AED">AED</option>
+              <option value="EUR">EUR</option>
+              <option value="USD">USD</option>
+              <option value="GBP">GBP</option>
+            </select>
+            <select id="filterStatusSelect" class="px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm bg-white">
+              <option value="ALL">All Status</option>
+              <option value="Active">Active Only</option>
+              <option value="Inactive">Inactive Only</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-600 uppercase">
+                  <th class="py-3.5 px-4">Roll No</th>
+                  <th class="py-3.5 px-4">Student &amp; Country</th>
+                  <th class="py-3.5 px-4">Batch &amp; Course</th>
+                  <th class="py-3.5 px-4">Phone / WhatsApp</th>
+                  <th class="py-3.5 px-4 text-right">Monthly Fee</th>
+                  <th class="py-3.5 px-4 text-center">Status</th>
+                  <th class="py-3.5 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="studentsTableBody" class="divide-y divide-slate-200 text-sm"></tbody>
+            </table>
+          </div>
+          <div id="studentsEmptyState" class="hidden py-12 text-center">
+            <p class="text-slate-600 font-medium">No students match your current filter.</p>
+          </div>
+
+          <!-- Pagination Footer -->
+          <div class="px-4 py-3 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div class="flex items-center gap-2">
+              <span class="text-slate-600 font-medium">Rows per page:</span>
+              <select id="studentsPageSizeSelect" class="px-2 py-1 rounded border border-slate-300 bg-white font-semibold">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+              </select>
+              <span id="studentsPaginationInfo" class="text-slate-500 ml-2">Showing 0 of 0</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button id="btnStudentsPrevPage" type="button" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white font-semibold hover:bg-slate-100 disabled:opacity-40">Prev</button>
+              <span id="studentsPageIndicator" class="px-2.5 font-bold text-slate-800">Page 1 / 1</span>
+              <button id="btnStudentsNextPage" type="button" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white font-semibold hover:bg-slate-100 disabled:opacity-40">Next</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: SABAQ & TIMETABLE -->
+      <section id="viewSabaq" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
+          <h2 class="text-sm font-bold text-slate-800 uppercase">Class Timetable &amp; Live Links</h2>
+          <div id="timetableCardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-1"></div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
+          <h2 class="text-sm font-bold text-slate-800 uppercase">Record Daily Sabaq, Kalma, Dua &amp; Screenshot</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-600">Date</label>
+              <input id="sabaqDateInput" type="date" value="2026-11-10" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600">Select Student *</label>
+              <select id="sabaqStudentSelect" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm bg-white"></select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600">Category</label>
+              <select id="sabaqCategorySelect" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm bg-white">
+                <option value="Quran Sabaq / Lesson">Quran Sabaq / Lesson</option>
+                <option value="Kalma Memorization">Kalma Memorization</option>
+                <option value="Islamic Dua">Islamic Dua</option>
+                <option value="Islamic Information">Islamic Information</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600">Aaj ka Sabaq / Details *</label>
+              <input id="sabaqNewInput" type="text" placeholder="e.g. Surah Yaseen 1-10 / 3rd Kalma" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600">Sabqi / Manzil / Remarks</label>
+              <input id="sabaqRevisionInput" type="text" placeholder="e.g. Para 1" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600">Upload Screenshot (IndexedDB)</label>
+              <input id="sabaqProofFile" type="file" accept="image/*" class="mt-1 w-full text-xs text-slate-500 file:py-1.5 file:px-2.5 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600">Performance</label>
+              <select id="sabaqRatingSelect" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm bg-white">
+                <option value="MashaAllah Excellent">MashaAllah Excellent</option>
+                <option value="Good Tajweed & Fluency">Good Tajweed &amp; Fluency</option>
+                <option value="Needs Practice">Needs Practice</option>
+              </select>
+            </div>
+            <div class="flex items-end">
+              <button id="btnAddSabaqRecord" type="button" class="w-full px-4 py-2 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition">
+                + Save Sabaq
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden p-4 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-200">
+            <h3 class="text-sm font-bold text-slate-800 uppercase">Sabaq Logs</h3>
+            <button id="btnSendWeeklyReport" type="button" class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition">
+              📲 Send Weekly Report on WhatsApp
+            </button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase">
+                  <th class="py-3 px-4">Date &amp; Category</th>
+                  <th class="py-3 px-4">Student</th>
+                  <th class="py-3 px-4">Lesson Details</th>
+                  <th class="py-3 px-4">Sabqi / Remarks</th>
+                  <th class="py-3 px-4 text-center">Screenshot</th>
+                  <th class="py-3 px-4 text-center">Performance</th>
+                  <th class="py-3 px-4 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="sabaqTableBody" class="divide-y divide-slate-200 text-sm"></tbody>
+            </table>
+          </div>
+          <div id="sabaqEmptyState" class="hidden py-8 text-center text-slate-500 text-sm">No sabaq logs recorded yet.</div>
+        </div>
+      </section>
+
+      <!-- TAB 3: DEMO CLASSES -->
+      <section id="viewDemos" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
+          <h2 class="text-sm font-bold text-slate-800 uppercase">Trial / Demo Class Tracker</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-600">Student Name *</label>
+              <input id="demoStudentName" type="text" placeholder="e.g. Zainab Ali" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600">Phone / WhatsApp *</label>
+              <input id="demoPhone" type="text" placeholder="+44... / 0300..." class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600">Course &amp; Country</label>
+              <input id="demoCourse" type="text" placeholder="Tajweed (UK)" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600">Trial Date &amp; Time</label>
+              <input id="demoDateTime" type="text" placeholder="Today 7:00 PM PKT" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600">Status</label>
+              <select id="demoStatus" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm bg-white">
+                <option value="Scheduled">Scheduled</option>
+                <option value="Trial Taken - Follow Up">Trial Taken - Follow Up</option>
+                <option value="Converted (Enrolled)">Converted (Enrolled)</option>
+                <option value="Not Interested">Not Interested</option>
+              </select>
+            </div>
+            <div class="flex items-end">
+              <button id="btnAddDemo" type="button" class="w-full px-4 py-2 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition">
+                + Add Trial
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase">
+                  <th class="py-3 px-4">Student Name</th>
+                  <th class="py-3 px-4">Phone / WhatsApp</th>
+                  <th class="py-3 px-4">Course &amp; Country</th>
+                  <th class="py-3 px-4">Trial Time</th>
+                  <th class="py-3 px-4 text-center">Status</th>
+                  <th class="py-3 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="demosTableBody" class="divide-y divide-slate-200 text-sm"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: MONTHLY FEES -->
+      <section id="viewFees" class="hidden space-y-4">
+        <div id="adminFeeProofQueueBox" class="hidden bg-amber-50 rounded-2xl p-4 border border-amber-200 shadow-xs space-y-3">
+          <h3 class="text-sm font-bold text-amber-900 uppercase">🔔 Uploaded Fee Screenshots Waiting Approval</h3>
+          <div id="feeProofQueueList" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-3">
+            <div>
+              <label for="feeMonthInput" class="block text-xs font-semibold text-slate-500 uppercase">Billing Month</label>
+              <input id="feeMonthInput" type="month" value="2026-11" class="mt-1 px-3 py-1.5 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div>
+              <label for="filterFeeStatusSelect" class="block text-xs font-semibold text-slate-500 uppercase">Payment Filter</label>
+              <select id="filterFeeStatusSelect" class="mt-1 px-3 py-1.5 rounded-lg border border-slate-300 text-sm bg-white">
+                <option value="ALL">All Students</option>
+                <option value="Paid">Approved / Paid</option>
+                <option value="Under Review">Screenshot Uploaded</option>
+                <option value="Pending">Pending (Unpaid)</option>
+              </select>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button id="btnSaveMonthlySnapshot" type="button" class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition">
+              📸 Save Monthly Snapshot
+            </button>
+            <button id="btnMarkAllFeesPaid" type="button" class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition">
+              Mark All Active Paid
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase">
+                  <th class="py-3 px-4">Roll No</th>
+                  <th class="py-3 px-4">Student Name</th>
+                  <th class="py-3 px-4">Batch &amp; Course</th>
+                  <th class="py-3 px-4 text-right">Fee</th>
+                  <th class="py-3 px-4 text-center">Status</th>
+                  <th class="py-3 px-4">Screenshot / Date</th>
+                  <th class="py-3 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="feesTableBody" class="divide-y divide-slate-200 text-sm"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: EXPENSES & MONTHLY SNAPSHOTS -->
+      <section id="viewExpenses" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
+          <h2 class="text-sm font-bold text-slate-800 uppercase">Record Academy Expense (Internet, Marketing, Software, Misc)</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-600">Date *</label>
+              <input id="expDateInput" type="date" value="2026-11-10" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600">Expense Title *</label>
+              <input id="expTitleInput" type="text" placeholder="e.g. PTCL Fiber Internet Bill" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600">Category</label>
+              <select id="expCategoryInput" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm bg-white">
+                <option value="Internet & Utilities">Internet &amp; Utilities</option>
+                <option value="Marketing / Ads">Marketing / Ads</option>
+                <option value="Software / Hosting">Software / Hosting</option>
+                <option value="Equipment / Hardware">Equipment / Hardware</option>
+                <option value="Other Expense">Other Expense</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600">Amount (PKR) *</label>
+              <input id="expAmountInput" type="number" min="0" placeholder="4500" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div class="flex items-end">
+              <button id="btnAddExpense" type="button" class="w-full px-4 py-2 rounded-lg text-sm font-semibold bg-rose-600 text-white hover:bg-rose-700 transition">
+                + Add Expense
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+            <div class="p-4 border-b border-slate-200 flex justify-between items-center">
+              <h3 class="text-sm font-bold text-slate-800 uppercase">Expense Ledger</h3>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase">
+                    <th class="py-3 px-4">Date</th>
+                    <th class="py-3 px-4">Title &amp; Category</th>
+                    <th class="py-3 px-4 text-right">Amount</th>
+                    <th class="py-3 px-4 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="expensesTableBody" class="divide-y divide-slate-200 text-sm"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+            <div class="p-4 border-b border-slate-200 flex justify-between items-center">
+              <h3 class="text-sm font-bold text-slate-800 uppercase">Saved Monthly Financial Snapshots</h3>
+              <button id="btnTakeSnapshotNow" type="button" class="px-3 py-1 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-700 hover:bg-indigo-100">
+                + Save Current Month Snapshot
+              </button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase">
+                    <th class="py-3 px-4">Month</th>
+                    <th class="py-3 px-4 text-right">Collected</th>
+                    <th class="py-3 px-4 text-right">Sal + Exp</th>
+                    <th class="py-3 px-4 text-right">Net Profit</th>
+                  </tr>
+                </thead>
+                <tbody id="snapshotsTableBody" class="divide-y divide-slate-200 text-sm"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 6: DAILY ATTENDANCE -->
+      <section id="viewAttendance" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-3">
+            <div>
+              <label for="attendanceDateInput" class="block text-xs font-semibold text-slate-500 uppercase">Attendance Date</label>
+              <input id="attendanceDateInput" type="date" value="2026-11-10" class="mt-1 px-3 py-1.5 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div id="attendanceDailySummary" class="text-xs sm:text-sm text-slate-600 font-medium pt-4">
+              Present: 0 | Absent: 0 | Leave: 0
+            </div>
+          </div>
+          <button id="btnMarkAllPresent" type="button" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 transition">
+            Mark All Present
+          </button>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase">
+                  <th class="py-3 px-4">Roll No</th>
+                  <th class="py-3 px-4">Student Name</th>
+                  <th class="py-3 px-4">Batch</th>
+                  <th class="py-3 px-4 text-center">Overall Attendance</th>
+                  <th class="py-3 px-4 text-right">Mark Status</th>
+                </tr>
+              </thead>
+              <tbody id="attendanceTableBody" class="divide-y divide-slate-200 text-sm"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 7: TEACHERS SALARY -->
+      <section id="viewSalaries" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
+          <h2 class="text-sm font-bold text-slate-800 uppercase">Teacher's Monthly Salary &amp; Payout Tracker</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-600">Teacher Name *</label>
+              <input id="salTeacherName" type="text" placeholder="e.g. Qari Usman" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600">Phone / WhatsApp</label>
+              <input id="salTeacherPhone" type="text" placeholder="0300-1234567" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600">Month</label>
+              <input id="salMonth" type="month" value="2026-11" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600">Total Classes / Hours</label>
+              <input id="salClasses" type="text" placeholder="45 Classes" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600">Salary Amount (Rs) *</label>
+              <input id="salAmount" type="number" min="0" placeholder="15000" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div class="flex items-end">
+              <button id="btnAddSalary" type="button" class="w-full px-4 py-2 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition">
+                + Add Record
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase">
+                  <th class="py-3 px-4">Teacher Name</th>
+                  <th class="py-3 px-4">Month</th>
+                  <th class="py-3 px-4">Classes / Hours</th>
+                  <th class="py-3 px-4 text-right">Salary (PKR)</th>
+                  <th class="py-3 px-4 text-center">Status</th>
+                  <th class="py-3 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="salariesTableBody" class="divide-y divide-slate-200 text-sm"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 8: STUDENT REPORT & PAYMENT PROOF MANAGER (WITH DATE RANGE & PDF) -->
+      <section id="viewParentPortal" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs max-w-4xl mx-auto space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
+            <div>
+              <span class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">Offline IndexedDB Student Report &amp; Proof Manager</span>
+              <h2 class="text-lg font-bold text-slate-900 mt-1">Student Date-Range Progress Report &amp; Payment Proof</h2>
+              <p class="text-xs text-slate-500">Select any student and date range to attach fee screenshots or generate a branded PDF Report Card for parents.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-semibold text-slate-600">Select Student</label>
+              <select id="parentPortalStudentSelect" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm bg-white"></select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600">From Date</label>
+              <input id="parentFromDate" type="date" value="2026-11-01" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600">To Date</label>
+              <input id="parentToDate" type="date" value="2026-11-30" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-2">
+            <button id="btnParentSearchRoll" type="button" class="px-5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition">
+              🔍 Load Student Report &amp; Fee Box
+            </button>
+            <button id="btnDownloadStudentPdfReport" type="button" class="px-5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition">
+              📄 Generate Branded PDF Report for Parent
+            </button>
+          </div>
+
+          <div id="parentReportResult" class="pt-3"></div>
+        </div>
+      </section>
+
+      <!-- TAB 9: EVALUATIONS -->
+      <section id="viewMarks" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
+          <h2 class="text-sm font-bold text-slate-800 uppercase">Record Quran Test / Recitation Evaluation</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            <div>
+              <label for="markStudentSelect" class="block text-xs font-medium text-slate-600">Select Student</label>
+              <select id="markStudentSelect" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm bg-white"></select>
+            </div>
+            <div>
+              <label for="markTestTitle" class="block text-xs font-medium text-slate-600">Test Title</label>
+              <input id="markTestTitle" type="text" placeholder="Monthly Tajweed Test" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div>
+              <label for="markSubject" class="block text-xs font-medium text-slate-600">Category</label>
+              <input id="markSubject" type="text" placeholder="Surah Mulk" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label for="markObtained" class="block text-xs font-medium text-slate-600">Obtained</label>
+                <input id="markObtained" type="number" min="0" placeholder="45" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+              </div>
+              <div>
+                <label for="markTotal" class="block text-xs font-medium text-slate-600">Total</label>
+                <input id="markTotal" type="number" min="1" value="50" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+              </div>
+            </div>
+            <div class="flex items-end">
+              <button id="btnAddMarkRecord" type="button" class="w-full px-4 py-2 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition">
+                + Save Evaluation
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase">
+                  <th class="py-3 px-4">Student</th>
+                  <th class="py-3 px-4">Test Title</th>
+                  <th class="py-3 px-4">Category</th>
+                  <th class="py-3 px-4 text-right">Marks</th>
+                  <th class="py-3 px-4 text-center">Grade</th>
+                  <th class="py-3 px-4 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="marksTableBody" class="divide-y divide-slate-200 text-sm"></tbody>
+            </table>
+          </div>
+          <div id="marksEmptyState" class="hidden py-10 text-center text-slate-500 text-sm">No test results added yet.</div>
+        </div>
+      </section>
+
+      <!-- TAB 10: 10 PDF REPORTS & CHARTS ANALYTICS CENTER -->
+      <section id="viewReports" class="hidden space-y-5">
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
+            <h3 class="text-sm font-bold text-slate-800 uppercase mb-3">📈 Monthly Earnings vs Expenses &amp; Salaries</h3>
+            <div class="h-64">
+              <canvas id="chartFinancials"></canvas>
+            </div>
+          </div>
+          <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
+            <h3 class="text-sm font-bold text-slate-800 uppercase mb-3">🌍 Students by Course &amp; Currency</h3>
+            <div class="h-64">
+              <canvas id="chartCourses"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- 10 PDF Reports Generator with Date Range -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
+            <div>
+              <h3 class="text-base font-extrabold text-slate-900">🖨️ 10 Official Academy PDF Reports (With Custom Logo &amp; Date Range)</h3>
+              <p class="text-xs text-slate-500">Har PDF report ke upar aapka IndexedDB Logo, Academy Name, Phone aur Email khud-ba-khud lag kar aayega.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600">From Date</label>
+              <input id="repFromDate" type="date" value="2026-11-01" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600">To Date</label>
+              <input id="repToDate" type="date" value="2026-11-30" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600">Billing Month</label>
+              <input id="repMonthInput" type="month" value="2026-11" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600">Select Report Type (1 to 10)</label>
+              <select id="repTypeSelect" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm bg-white font-semibold">
+                <option value="1">1. Executive Financial Summary (Income vs Expense)</option>
+                <option value="2">2. Monthly Fee Collection (Paid Students)</option>
+                <option value="3">3. Fee Defaulters &amp; Pending Dues Report</option>
+                <option value="4">4. Date-Range Expense Ledger Report</option>
+                <option value="5">5. Teachers Salary &amp; Payout Report</option>
+                <option value="6">6. Student Attendance Summary (Date Range)</option>
+                <option value="7">7. Daily Sabaq, Kalma &amp; Dua Progress Report</option>
+                <option value="8">8. Country &amp; Currency Revenue Breakdown</option>
+                <option value="9">9. Course &amp; Batch Enrollment Analytics</option>
+                <option value="10">10. Historical Monthly Snapshots Comparison</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-2">
+            <button id="btnPreviewReport" type="button" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 text-white hover:bg-indigo-700 transition">
+              👁️ Preview Report Below
+            </button>
+            <button id="btnPrintPdfReport" type="button" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-emerald-600 text-white hover:bg-emerald-700 transition">
+              📥 Download / Print Official PDF
+            </button>
+          </div>
+
+          <div id="reportPreviewContainer" class="p-5 rounded-2xl border border-slate-200 bg-slate-50 overflow-x-auto"></div>
+        </div>
+      </section>
+
+      <!-- TAB 11: ADMIN PANEL (BRANDING LOGO, PIN, STAFF ACCOUNTS) -->
+      <section id="viewAdmin" class="hidden space-y-5">
+        <!-- Branding & Financial PIN Setup -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs space-y-4">
+          <h2 class="text-sm font-bold text-slate-800 uppercase">🎨 Academy Logo, Header Details &amp; Financial Password Setup (Saved in IndexedDB)</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600">Academy Name</label>
+              <input id="brandNameInput" type="text" placeholder="Raza Tutors — Online Quran Academy" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600">Official Phone / WhatsApp</label>
+              <input id="brandPhoneInput" type="text" placeholder="+92 370 4161579" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600">Official Email</label>
+              <input id="brandEmailInput" type="text" placeholder="muhammad.zohaib.748@nayapay" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600">Upload Academy Logo (For Sidebar &amp; PDFs)</label>
+              <input id="brandLogoInput" type="file" accept="image/*" class="mt-1 w-full text-xs text-slate-500 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600">Financial Lock Password / PIN *</label>
+              <input id="brandFinPinInput" type="text" placeholder="Default: 1234" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm font-mono" />
+            </div>
+            <div class="flex items-end">
+              <button id="btnSaveBranding" type="button" class="w-full px-4 py-2 rounded-lg text-sm font-bold bg-emerald-600 text-white hover:bg-emerald-700 transition">
+                💾 Save Logo, Header &amp; PIN
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Staff Accounts -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h2 class="text-sm font-bold text-slate-800 uppercase">Teacher &amp; Staff Login Accounts</h2>
+            <span id="adminTotalUsersBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">Total Accounts: 1</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-2">
+            <input id="adminNewUserName" type="text" placeholder="Full Name" class="px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            <input id="adminNewUserEmail" type="text" placeholder="Username / Email" class="px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            <input id="adminNewUserPass" type="text" placeholder="Password" class="px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+            <select id="adminNewUserRole" class="px-3 py-2 rounded-lg border border-slate-300 text-sm bg-white">
+              <option value="Staff / Teacher">Staff / Teacher</option>
+              <option value="Super Admin">Super Admin</option>
+            </select>
+            <button id="btnAdminCreateUser" type="button" class="px-4 py-2 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition">
+              + Create Account
+            </button>
+          </div>
+
+          <div class="overflow-x-auto pt-3">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase">
+                  <th class="py-3 px-4">Name</th>
+                  <th class="py-3 px-4">Username</th>
+                  <th class="py-3 px-4">Password</th>
+                  <th class="py-3 px-4">Role</th>
+                  <th class="py-3 px-4 text-center">Status</th>
+                  <th class="py-3 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminUsersTableBody" class="divide-y divide-slate-200 text-sm"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- SCREENSHOT PREVIEW MODAL -->
+  <div id="screenshotModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-5 shadow-xl border border-slate-200 space-y-3">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-2.5">
+        <h3 id="screenshotModalTitle" class="text-base font-bold text-slate-900">Verification Image</h3>
+        <button id="btnCloseScreenshotModal" type="button" class="text-slate-400 hover:text-slate-600 text-xl font-bold px-2">&times;</button>
+      </div>
+      <div class="max-h-[65vh] overflow-y-auto text-center bg-slate-100 rounded-xl p-2">
+        <img id="screenshotModalImg" src="" alt="Proof" class="max-w-full mx-auto rounded-lg" />
+      </div>
+      <p id="screenshotModalNote" class="text-xs text-slate-600 font-medium"></p>
+      <div id="screenshotModalAdminBtns" class="flex justify-end gap-2 pt-2 border-t border-slate-200">
+        <button id="btnRejectProofModal" type="button" class="px-4 py-2 rounded-lg text-xs font-semibold bg-rose-50 text-rose-700">Reject</button>
+        <button id="btnApproveProofModal" type="button" class="px-5 py-2 rounded-lg text-xs font-semibold bg-emerald-600 text-white">✅ Approve &amp; Mark Paid</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD / EDIT STUDENT MODAL -->
+  <div id="studentModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-200 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+        <h3 id="studentModalTitle" class="text-lg font-bold text-slate-900">Add New Student</h3>
+        <button id="btnCloseStudentModal" type="button" class="text-slate-400 hover:text-slate-600 text-xl font-bold px-2">&times;</button>
+      </div>
+
+      <form id="studentForm" class="space-y-3.5 mt-4">
+        <input id="studentIdInput" type="hidden" />
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700">Roll No *</label>
+            <input id="studentRollInput" type="text" required class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700">Student Full Name *</label>
+            <input id="studentNameInput" type="text" required class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700">Father / Guardian Name</label>
+            <input id="studentFatherInput" type="text" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700">Phone / WhatsApp *</label>
+            <input id="studentPhoneInput" type="text" required class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700">Batch *</label>
+            <select id="studentClassInput" required class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm bg-white">
+              <option value="Beginner / Starter">Beginner / Starter</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Advanced Tajweed">Advanced Tajweed</option>
+              <option value="Hifz-ul-Quran">Hifz-ul-Quran</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700">Quran Course *</label>
+            <select id="studentSubjectsInput" required class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm bg-white">
+              <option value="Quran with Tajweed">Quran with Tajweed</option>
+              <option value="Madni Qaida">Madni Qaida</option>
+              <option value="Nazra Quran">Nazra Quran</option>
+              <option value="Memorization (Hifz)">Memorization (Hifz)</option>
+              <option value="Islamic Dua & Namaz">Islamic Dua &amp; Namaz</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700">Class Timing (PKT)</label>
+            <input id="studentClassTimeInput" type="text" placeholder="05:00 PM PKT" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700">Teams / Zoom Link</label>
+            <input id="studentMeetingLinkInput" type="text" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700">Currency</label>
+            <select id="studentCurrencyInput" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm bg-white">
+              <option value="PKR">PKR (Rs)</option>
+              <option value="AED">AED (Dirham)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="USD">USD ($)</option>
+              <option value="GBP">GBP (£)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700">Monthly Fee *</label>
+            <input id="studentFeeInput" type="number" min="0" required class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700">Admission Date</label>
+            <input id="studentJoinDateInput" type="date" value="2026-11-01" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700">Status</label>
+            <select id="studentStatusInput" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm bg-white">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700">Country / City</label>
+            <input id="studentNotesInput" type="text" placeholder="Dubai UAE / France" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
+          <button id="btnCancelStudentModal" type="button" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-lg text-sm font-semibold bg-indigo-600 text-white">Save Student</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- FEE RECEIPT MODAL -->
+  <div id="receiptModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+        <h3 class="text-base font-bold text-slate-900">Student Fee Slip</h3>
+        <button id="btnCloseReceiptModal" type="button" class="text-slate-400 hover:text-slate-600 text-xl font-bold px-2">&times;</button>
+      </div>
+      <div id="receiptContent" class="my-4 p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-sm"></div>
+      <div class="flex justify-end gap-2">
+        <button id="btnCopyReceiptText" type="button" class="px-4 py-2 rounded-lg text-xs font-semibold bg-emerald-600 text-white">Send on WhatsApp</button>
+        <button id="btnDismissReceiptModal" type="button" class="px-4 py-2 rounded-lg text-xs font-medium bg-slate-100 text-slate-700">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toastBanner" class="hidden fixed bottom-4 right-4 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-lg text-xs sm:text-sm font-medium"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
