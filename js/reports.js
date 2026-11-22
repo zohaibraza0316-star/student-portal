@@ -1,11 +1,11 @@
 // ==========================================
-// TAB 10: BRANDED PDF ENGINE, CHARTS & 10 REPORTS
+// TAB 10: BRANDED PDF ENGINE, OFFLINE CHARTS & 10 DETAILED REPORTS
 // ==========================================
-function openBrandedPdfPrintWindow(reportTitle, dateRangeText, bodyHtml) {
+function openBrandedPdfPrintWindow(reportTitle, dateRangeText, bodyHtml, isLandscape = false) {
   const cfg = state.settings || {};
   const logoHtml = cfg.logoDataUrl
-    ? `<img src="${cfg.logoDataUrl}" style="width:65px;height:65px;object-fit:contain;border-radius:10px;" />`
-    : `<div style="width:55px;height:55px;border-radius:12px;background:#4f46e5;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;">RT</div>`;
+    ? `<img src="${cfg.logoDataUrl}" style="width:62px;height:62px;object-fit:contain;border-radius:10px;" />`
+    : `<div style="width:52px;height:52px;border-radius:12px;background:#4f46e5;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;">RT</div>`;
 
   const win = window.open('', '_blank');
   if (!win) return showToast('Popup blocked! Browser mein popups allow karein.');
@@ -15,24 +15,32 @@ function openBrandedPdfPrintWindow(reportTitle, dateRangeText, bodyHtml) {
     <head>
       <title>${escapeHtml(reportTitle)} — ${escapeHtml(cfg.academyName)}</title>
       <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; color: #0f172a; padding: 28px; }
-        .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #4f46e5; padding-bottom: 14px; margin-bottom: 20px; }
-        .brand-left { display: flex; align-items: center; gap: 14px; }
-        .brand-title { font-size: 20px; font-weight: 800; color: #1e1b4b; margin: 0; }
-        .brand-sub { font-size: 12px; color: #475569; margin: 3px 0 0 0; }
+        @page { size: ${isLandscape ? 'A4 landscape' : 'A4 portrait'}; margin: 10mm; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; color: #0f172a; padding: 18px; }
+        .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #4f46e5; padding-bottom: 12px; margin-bottom: 16px; }
+        .brand-left { display: flex; align-items: center; gap: 12px; }
+        .brand-title { font-size: 19px; font-weight: 800; color: #1e1b4b; margin: 0; }
+        .brand-sub { font-size: 11px; color: #475569; margin: 3px 0 0 0; }
         .rep-box { text-align: right; }
-        .rep-title { font-size: 15px; font-weight: 700; color: #4f46e5; margin: 0; text-transform: uppercase; }
+        .rep-title { font-size: 14px; font-weight: 700; color: #4f46e5; margin: 0; text-transform: uppercase; }
         .rep-date { font-size: 11px; color: #64748b; margin-top: 3px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 12px; }
-        th, td { border: 1px solid #cbd5e1; padding: 8px 10px; text-align: left; }
-        th { background-color: #f1f5f9; font-weight: 700; text-transform: uppercase; font-size: 11px; }
-        .summary-grid { display: flex; gap: 12px; margin-bottom: 16px; }
-        .summary-card { flex: 1; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; background: #f8fafc; }
-        @media print { .no-print { display: none; } }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11px; }
+        th, td { border: 1px solid #cbd5e1; padding: 6px 8px; text-align: left; }
+        th { background-color: #f1f5f9; font-weight: 700; text-transform: uppercase; font-size: 10px; }
+        .summary-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+        .summary-card { flex: 1; min-width: 140px; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; background: #f8fafc; font-size: 11px; }
+        .att-matrix-table th, .att-matrix-table td { padding: 3px 2px; font-size: 9.5px; text-align: center; }
+        .att-matrix-table th.sticky-col, .att-matrix-table td.sticky-col { text-align: left; padding-left: 5px; }
+        .att-pill-p { background: #dcfce7; color: #166534; font-weight: 700; padding: 1px 3px; border-radius: 3px; }
+        .att-pill-a { background: #ffe4e6; color: #be123c; font-weight: 700; padding: 1px 3px; border-radius: 3px; }
+        .att-pill-l { background: #fef3c7; color: #b45309; font-weight: 700; padding: 1px 3px; border-radius: 3px; }
+        .att-pill-none { color: #cbd5e1; }
+        .footer { margin-top: 18px; padding-top: 8px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; font-size: 10px; color: #64748b; }
+        @media print { .no-print { display: none; } body { padding: 0; } }
       </style>
     </head>
     <body>
-      <div class="no-print" style="margin-bottom:15px;text-align:right;">
+      <div class="no-print" style="margin-bottom:12px;text-align:right;">
         <button onclick="window.print()" style="background:#4f46e5;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:700;cursor:pointer;">🖨️ Save as PDF / Print</button>
       </div>
       <div class="header">
@@ -49,6 +57,10 @@ function openBrandedPdfPrintWindow(reportTitle, dateRangeText, bodyHtml) {
         </div>
       </div>
       ${bodyHtml}
+      <div class="footer">
+        <span>Generated by ${escapeHtml(cfg.academyName || 'Raza Tutors')} Portal (Offline IndexedDB)</span>
+        <span>Printed on: ${getTodayDateStr()}</span>
+      </div>
     </body>
     </html>
   `);
@@ -58,36 +70,26 @@ function openBrandedPdfPrintWindow(reportTitle, dateRangeText, bodyHtml) {
 function renderChartsAndReports() {
   const ctxFin = document.getElementById('chartFinancials');
   const ctxCourse = document.getElementById('chartCourses');
-  if (!ctxFin || !ctxCourse || typeof Chart === 'undefined') return;
 
   const months = Array.from(new Set([
     ...Object.keys(state.fees || {}),
     ...Object.keys(state.snapshots || {}),
-    '2026-09', '2026-10', '2026-11'
+    '2026-09', '2026-10', getCurrentMonthStr()
   ])).sort().slice(-6);
 
   const incomeData = months.map(m => {
-    if (state.snapshots && state.snapshots[m]) return state.snapshots[m].collected;
+    if (state.snapshots && state.snapshots[m]) return Number(state.snapshots[m].collected) || 0;
     return getMonthMetrics(m).collected;
   });
   const outflowData = months.map(m => {
-    if (state.snapshots && state.snapshots[m]) return (state.snapshots[m].salaries || 0) + (state.snapshots[m].expenses || 0);
+    if (state.snapshots && state.snapshots[m]) return (Number(state.snapshots[m].salaries) || 0) + (Number(state.snapshots[m].expenses) || 0);
     const met = getMonthMetrics(m);
     return met.monthSalaries + met.monthExpenses;
   });
 
-  if (chartFinInstance) chartFinInstance.destroy();
-  chartFinInstance = new Chart(ctxFin, {
-    type: 'bar',
-    data: {
-      labels: months,
-      datasets: [
-        { label: 'Collected Fees', data: incomeData, backgroundColor: '#10b981' },
-        { label: 'Expenses + Salaries', data: outflowData, backgroundColor: '#f43f5e' }
-      ]
-    },
-    options: { responsive: true, maintainAspectRatio: false }
-  });
+  if (ctxFin && typeof renderOfflineBarChart === 'function') {
+    renderOfflineBarChart(ctxFin, months, incomeData, outflowData);
+  }
 
   const courseCounts = {};
   state.students.forEach(s => {
@@ -95,39 +97,128 @@ function renderChartsAndReports() {
     courseCounts[k] = (courseCounts[k] || 0) + 1;
   });
 
-  if (chartCourseInstance) chartCourseInstance.destroy();
-  chartCourseInstance = new Chart(ctxCourse, {
-    type: 'doughnut',
-    data: {
-      labels: Object.keys(courseCounts),
-      datasets: [{ data: Object.values(courseCounts), backgroundColor: ['#4f46e5', '#10b981', '#f59e0b', '#06b6d4', '#ec4899'] }]
-    },
-    options: { responsive: true, maintainAspectRatio: false }
-  });
+  if (ctxCourse && typeof renderOfflineDoughnutChart === 'function') {
+    renderOfflineDoughnutChart(ctxCourse, Object.keys(courseCounts), Object.values(courseCounts));
+  }
 
   generateSelectedReportHtml(false);
+}
+
+// Detailed Day-by-Day Attendance Register Builder (Report #6)
+function buildDetailedAttendanceReportHtml(monthKey, fromDate, toDate, studentFilter, attMode) {
+  const targetStudents = studentFilter === 'ALL'
+    ? state.students
+    : state.students.filter(s => s.id === studentFilter);
+
+  const dates = attMode === 'date_range'
+    ? getDatesInRange(fromDate, toDate)
+    : getDatesInMonth(monthKey);
+
+  let grandP = 0, grandA = 0, grandL = 0;
+
+  const rowsHtml = targetStudents.map(s => {
+    let sp = 0, sa = 0, sl = 0;
+    const dayCells = dates.map(d => {
+      const st = (state.attendance[d.key] && state.attendance[d.key][s.id]) || '';
+      if (st === 'Present') {
+        sp++; grandP++;
+        return `<td><span class="att-pill-p">P</span></td>`;
+      } else if (st === 'Absent') {
+        sa++; grandA++;
+        return `<td><span class="att-pill-a">A</span></td>`;
+      } else if (st === 'Leave') {
+        sl++; grandL++;
+        return `<td><span class="att-pill-l">L</span></td>`;
+      }
+      return `<td><span class="att-pill-none">·</span></td>`;
+    }).join('');
+
+    const marked = sp + sa + sl;
+    const pct = marked > 0 ? Math.round((sp / marked) * 100) : 0;
+    return `
+      <tr>
+        <td class="sticky-col font-bold">${escapeHtml(s.rollNo)}</td>
+        <td class="sticky-col font-semibold">${escapeHtml(s.name)}</td>
+        <td class="sticky-col">${escapeHtml(s.className)}</td>
+        ${dayCells}
+        <td class="font-bold text-emerald-700">${sp}</td>
+        <td class="font-bold text-rose-700">${sa}</td>
+        <td class="font-bold text-amber-700">${sl}</td>
+        <td class="font-bold">${marked}</td>
+        <td class="font-bold">${marked > 0 ? pct + '%' : '—'}</td>
+      </tr>
+    `;
+  }).join('');
+
+  const grandMarked = grandP + grandA + grandL;
+  const overallPct = grandMarked > 0 ? Math.round((grandP / grandMarked) * 100) : 0;
+  const scopeLabel = attMode === 'date_range' ? `${fromDate} to ${toDate}` : `Month ${monthKey} (Day 1 to ${dates.length})`;
+
+  return `
+    <div class="summary-grid grid grid-cols-2 sm:grid-cols-5 gap-2 mb-3 text-xs">
+      <div class="summary-card p-2.5 rounded-xl bg-white border border-slate-200"><strong>Scope:</strong> ${escapeHtml(scopeLabel)}</div>
+      <div class="summary-card p-2.5 rounded-xl bg-white border border-slate-200"><strong>Students:</strong> ${targetStudents.length}</div>
+      <div class="summary-card p-2.5 rounded-xl bg-white border border-slate-200"><strong>Total Present (P):</strong> <span class="text-emerald-700 font-bold">${grandP}</span></div>
+      <div class="summary-card p-2.5 rounded-xl bg-white border border-slate-200"><strong>Total Absent / Leave:</strong> <span class="text-rose-700 font-bold">${grandA}A</span> / <span class="text-amber-700 font-bold">${grandL}L</span></div>
+      <div class="summary-card p-2.5 rounded-xl bg-white border border-slate-200"><strong>Overall Rate:</strong> <span class="text-indigo-700 font-bold">${overallPct}%</span></div>
+    </div>
+    <p class="text-[11px] text-slate-500 mb-2">Legend: <span class="att-pill-p">P</span> Present &nbsp; <span class="att-pill-a">A</span> Absent &nbsp; <span class="att-pill-l">L</span> Leave &nbsp; <span class="att-pill-none">·</span> Not Marked (Prints automatically in Landscape A4 PDF)</p>
+    <table class="att-matrix-table w-full border-collapse bg-white">
+      <thead>
+        <tr class="bg-slate-100">
+          <th class="sticky-col">Roll</th>
+          <th class="sticky-col">Student</th>
+          <th class="sticky-col">Batch</th>
+          ${dates.map(d => `<th>${escapeHtml(d.day)}</th>`).join('')}
+          <th>P</th>
+          <th>A</th>
+          <th>L</th>
+          <th>Days</th>
+          <th>%</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rowsHtml || '<tr><td colspan="40">No students found.</td></tr>'}
+      </tbody>
+    </table>
+  `;
 }
 
 function generateSelectedReportHtml(openPdf = false) {
   const type = document.getElementById('repTypeSelect').value;
   const fromDate = document.getElementById('repFromDate').value || '2026-11-01';
   const toDate = document.getElementById('repToDate').value || '2026-11-30';
-  const monthKey = document.getElementById('repMonthInput').value || '2026-11';
+  const monthKey = document.getElementById('repMonthInput').value || getCurrentMonthStr();
+  const studentFilter = (document.getElementById('repStudentFilter') || {}).value || 'ALL';
+  const attMode = (document.getElementById('repAttModeSelect') || {}).value || 'monthly_grid';
+
   const m = getMonthMetrics(monthKey);
   const monthFees = state.fees[monthKey] || {};
+  const scopedStudents = studentFilter === 'ALL' ? state.students : state.students.filter(s => s.id === studentFilter);
 
   let title = '';
   let html = '';
+  let isLandscape = false;
 
   if (type === '1') {
     title = `1. Executive Financial Summary (${monthKey})`;
+    const totalBilled = m.collected + m.pending;
+    const collRate = totalBilled > 0 ? Math.round((m.collected / totalBilled) * 100) : 0;
+    const profitMargin = m.collected > 0 ? Math.round((m.netProfit / m.collected) * 100) : 0;
     html = `
-      <table class="w-full text-left border-collapse">
-        <thead><tr><th>Metric</th><th>Month / Scope</th><th>Amount / Value</th></tr></thead>
+      <div class="summary-grid grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3 text-xs">
+        <div class="summary-card p-3 rounded-xl bg-white border border-slate-200"><strong>Collection Rate</strong><br><span class="text-emerald-700 font-bold text-sm">${collRate}%</span></div>
+        <div class="summary-card p-3 rounded-xl bg-white border border-slate-200"><strong>Total Outflow</strong><br><span class="text-rose-700 font-bold text-sm">Rs ${(m.monthSalaries + m.monthExpenses).toLocaleString()}</span></div>
+        <div class="summary-card p-3 rounded-xl bg-white border border-slate-200"><strong>Net Profit</strong><br><span class="text-indigo-700 font-bold text-sm">Rs ${m.netProfit.toLocaleString()}</span></div>
+        <div class="summary-card p-3 rounded-xl bg-white border border-slate-200"><strong>Profit Margin</strong><br><span class="text-sky-700 font-bold text-sm">${profitMargin}%</span></div>
+      </div>
+      <table class="w-full text-left border-collapse bg-white">
+        <thead><tr><th>Financial Metric</th><th>Scope</th><th>Value / Amount</th></tr></thead>
         <tbody>
-          <tr><td>Total Active Students</td><td>${monthKey}</td><td>${m.activeCount} Students</td></tr>
-          <tr><td>Current Month Fees Collected</td><td>${monthKey}</td><td>Rs ${m.collected.toLocaleString()}</td></tr>
-          <tr><td>Pending Fees (Unpaid)</td><td>${monthKey}</td><td>Rs ${m.pending.toLocaleString()} (${m.unpaidCount} students)</td></tr>
+          <tr><td>Total Enrolled Students (Active / Inactive)</td><td>All</td><td>${state.students.length} (${m.activeCount} Active / ${state.students.length - m.activeCount} Inactive)</td></tr>
+          <tr><td>Total Expected Monthly Billing (Active)</td><td>${monthKey}</td><td>Rs ${totalBilled.toLocaleString()}</td></tr>
+          <tr><td>Fees Collected (Approved / Paid)</td><td>${monthKey}</td><td><strong>Rs ${m.collected.toLocaleString()}</strong> (${collRate}%)</td></tr>
+          <tr><td>Pending Fees (Unpaid + Under Review)</td><td>${monthKey}</td><td>Rs ${m.pending.toLocaleString()} (${m.unpaidCount} students, ${m.proofCount} proofs pending)</td></tr>
           <tr><td>Teachers Salaries Paid</td><td>${monthKey}</td><td>Rs ${m.monthSalaries.toLocaleString()}</td></tr>
           <tr><td>Academy Operational Expenses</td><td>${monthKey}</td><td>Rs ${m.monthExpenses.toLocaleString()}</td></tr>
           <tr><td><strong>Current Month Net Profit</strong></td><td><strong>${monthKey}</strong></td><td><strong>Rs ${m.netProfit.toLocaleString()}</strong></td></tr>
@@ -135,72 +226,153 @@ function generateSelectedReportHtml(openPdf = false) {
         </tbody>
       </table>`;
   } else if (type === '2') {
-    title = `2. Paid Students Fee Collection Report (${monthKey})`;
-    const paidList = state.students.filter(s => monthFees[s.id] && monthFees[s.id].status === 'Paid');
-    html = `<table><thead><tr><th>Roll No</th><th>Student</th><th>Course</th><th>Paid Date</th><th>Amount</th></tr></thead><tbody>` +
-      (paidList.length === 0 ? '<tr><td colspan="5">No paid records found for this month.</td></tr>' : paidList.map(s => `<tr><td>${escapeHtml(s.rollNo)}</td><td>${escapeHtml(s.name)}</td><td>${escapeHtml(s.subjects)}</td><td>${escapeHtml(monthFees[s.id].date)}</td><td>${escapeHtml(s.currency || 'PKR')} ${Number(s.monthlyFee).toLocaleString()}</td></tr>`).join('')) +
+    title = `2. Detailed Paid Students Fee Collection (${monthKey})`;
+    const paidList = scopedStudents.filter(s => monthFees[s.id] && monthFees[s.id].status === 'Paid');
+    const sumPaid = paidList.reduce((acc, s) => acc + (Number(s.monthlyFee) || 0), 0);
+    html = `<table class="w-full bg-white"><thead><tr><th>Roll No</th><th>Student &amp; Father</th><th>Batch &amp; Course</th><th>Country</th><th>Paid Date</th><th>Proof</th><th>Amount</th></tr></thead><tbody>` +
+      (paidList.length === 0 ? '<tr><td colspan="7">No paid records found for this month.</td></tr>' : paidList.map(s => `
+        <tr>
+          <td>${escapeHtml(s.rollNo)}</td>
+          <td><strong>${escapeHtml(s.name)}</strong>${s.fatherName ? '<br><small>' + escapeHtml(s.fatherName) + '</small>' : ''}</td>
+          <td>${escapeHtml(s.className)} • ${escapeHtml(s.subjects)}</td>
+          <td>${escapeHtml(s.notes || 'Pakistan')}</td>
+          <td>${escapeHtml(monthFees[s.id].date || '—')}</td>
+          <td>${monthFees[s.id].proofImage ? '✅ Attached' : 'Manual'}</td>
+          <td><strong>${escapeHtml(s.currency || 'PKR')} ${Number(s.monthlyFee).toLocaleString()}</strong></td>
+        </tr>`).join('') +
+        `<tr><td colspan="6" style="text-align:right;"><strong>TOTAL COLLECTED (${paidList.length} Students):</strong></td><td><strong>${sumPaid.toLocaleString()}</strong></td></tr>`) +
       `</tbody></table>`;
   } else if (type === '3') {
-    title = `3. Fee Defaulters & Pending Dues Report (${monthKey})`;
-    const unpaidList = state.students.filter(s => s.status === 'Active' && (!monthFees[s.id] || monthFees[s.id].status !== 'Paid'));
-    html = `<table><thead><tr><th>Roll No</th><th>Student</th><th>Phone</th><th>Country</th><th>Pending Fee</th></tr></thead><tbody>` +
-      (unpaidList.length === 0 ? '<tr><td colspan="5">All active students have paid!</td></tr>' : unpaidList.map(s => `<tr><td>${escapeHtml(s.rollNo)}</td><td>${escapeHtml(s.name)}</td><td>${escapeHtml(s.phone)}</td><td>${escapeHtml(s.notes || 'Pakistan')}</td><td>${escapeHtml(s.currency || 'PKR')} ${Number(s.monthlyFee).toLocaleString()}</td></tr>`).join('')) +
+    title = `3. Fee Defaulters & Pending Dues Detailed Report (${monthKey})`;
+    const unpaidList = scopedStudents.filter(s => s.status === 'Active' && (!monthFees[s.id] || monthFees[s.id].status !== 'Paid'));
+    const sumPending = unpaidList.reduce((acc, s) => acc + (Number(s.monthlyFee) || 0), 0);
+    html = `<table class="w-full bg-white"><thead><tr><th>Roll No</th><th>Student &amp; Father</th><th>Phone / WhatsApp</th><th>Country</th><th>Status</th><th>Attendance</th><th>Pending Fee</th></tr></thead><tbody>` +
+      (unpaidList.length === 0 ? '<tr><td colspan="7">MashaAllah! All active students have paid!</td></tr>' : unpaidList.map(s => {
+        const st = (monthFees[s.id] && monthFees[s.id].status) || 'Pending';
+        return `<tr>
+          <td>${escapeHtml(s.rollNo)}</td>
+          <td><strong>${escapeHtml(s.name)}</strong>${s.fatherName ? '<br><small>' + escapeHtml(s.fatherName) + '</small>' : ''}</td>
+          <td>${escapeHtml(s.phone)}</td>
+          <td>${escapeHtml(s.notes || 'Pakistan')}</td>
+          <td>${escapeHtml(st)}</td>
+          <td>${getStudentAttendanceStats(s.id)}</td>
+          <td><strong>${escapeHtml(s.currency || 'PKR')} ${Number(s.monthlyFee).toLocaleString()}</strong></td>
+        </tr>`;
+      }).join('') +
+      `<tr><td colspan="6" style="text-align:right;"><strong>TOTAL PENDING (${unpaidList.length} Students):</strong></td><td><strong>${sumPending.toLocaleString()}</strong></td></tr>`) +
       `</tbody></table>`;
   } else if (type === '4') {
-    title = `4. Academy Expense Ledger (${fromDate} to ${toDate})`;
+    title = `4. Detailed Academy Expense Ledger (${fromDate} to ${toDate})`;
     const exps = (state.expenses || []).filter(x => x.date >= fromDate && x.date <= toDate);
-    html = `<table><thead><tr><th>Date</th><th>Expense Title</th><th>Category</th><th>Amount (PKR)</th></tr></thead><tbody>` +
-      (exps.length === 0 ? '<tr><td colspan="4">No expenses in this date range.</td></tr>' : exps.map(x => `<tr><td>${escapeHtml(x.date)}</td><td>${escapeHtml(x.title)}</td><td>${escapeHtml(x.category)}</td><td>Rs ${Number(x.amount).toLocaleString()}</td></tr>`).join('')) +
+    const totalExp = exps.reduce((s, x) => s + (Number(x.amount) || 0), 0);
+    const byCat = {};
+    exps.forEach(x => { byCat[x.category] = (byCat[x.category] || 0) + (Number(x.amount) || 0); });
+    const catSummary = Object.keys(byCat).map(c => `<div class="summary-card p-2.5 rounded-xl bg-white border border-slate-200"><strong>${escapeHtml(c)}</strong><br>Rs ${byCat[c].toLocaleString()}</div>`).join('');
+    html = (catSummary ? `<div class="summary-grid grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3 text-xs">${catSummary}</div>` : '') +
+      `<table class="w-full bg-white"><thead><tr><th>Date</th><th>Expense Title</th><th>Category</th><th>Amount (PKR)</th></tr></thead><tbody>` +
+      (exps.length === 0 ? '<tr><td colspan="4">No expenses in this date range.</td></tr>' : exps.map(x => `<tr><td>${escapeHtml(x.date)}</td><td>${escapeHtml(x.title)}</td><td>${escapeHtml(x.category)}</td><td>Rs ${Number(x.amount).toLocaleString()}</td></tr>`).join('') +
+      `<tr><td colspan="3" style="text-align:right;"><strong>GRAND TOTAL EXPENSES:</strong></td><td><strong>Rs ${totalExp.toLocaleString()}</strong></td></tr>`) +
       `</tbody></table>`;
   } else if (type === '5') {
     title = `5. Teachers Salary & Payout Report (${monthKey})`;
     const sals = (state.salaries || []).filter(x => x.month === monthKey);
-    html = `<table><thead><tr><th>Teacher Name</th><th>Phone</th><th>Classes / Hours</th><th>Status</th><th>Salary</th></tr></thead><tbody>` +
+    const paidSum = sals.filter(x => x.status === 'Paid').reduce((a, x) => a + (Number(x.amount) || 0), 0);
+    const pendSum = sals.filter(x => x.status !== 'Paid').reduce((a, x) => a + (Number(x.amount) || 0), 0);
+    html = `<div class="summary-grid grid grid-cols-3 gap-2 mb-3 text-xs">
+        <div class="summary-card p-2.5 rounded-xl bg-white border border-slate-200"><strong>Paid Salaries:</strong> Rs ${paidSum.toLocaleString()}</div>
+        <div class="summary-card p-2.5 rounded-xl bg-white border border-slate-200"><strong>Pending Salaries:</strong> Rs ${pendSum.toLocaleString()}</div>
+        <div class="summary-card p-2.5 rounded-xl bg-white border border-slate-200"><strong>Total Payroll:</strong> Rs ${(paidSum + pendSum).toLocaleString()}</div>
+      </div>
+      <table class="w-full bg-white"><thead><tr><th>Teacher Name</th><th>Phone</th><th>Classes / Hours</th><th>Status</th><th>Salary</th></tr></thead><tbody>` +
       (sals.length === 0 ? '<tr><td colspan="5">No teacher salaries recorded for this month.</td></tr>' : sals.map(x => `<tr><td>${escapeHtml(x.name)}</td><td>${escapeHtml(x.phone)}</td><td>${escapeHtml(x.classes)}</td><td>${escapeHtml(x.status)}</td><td>Rs ${Number(x.amount).toLocaleString()}</td></tr>`).join('')) +
       `</tbody></table>`;
   } else if (type === '6') {
-    title = `6. Student Attendance Summary (${fromDate} to ${toDate})`;
-    html = `<table><thead><tr><th>Roll No</th><th>Student Name</th><th>Batch</th><th>Attendance Rate in Range</th></tr></thead><tbody>` +
-      state.students.map(s => `<tr><td>${escapeHtml(s.rollNo)}</td><td>${escapeHtml(s.name)}</td><td>${escapeHtml(s.className)}</td><td>${getStudentAttendanceStats(s.id, fromDate, toDate)}</td></tr>`).join('') +
-      `</tbody></table>`;
+    title = attMode === 'date_range'
+      ? `6. Detailed Day-by-Day Attendance Register (${fromDate} to ${toDate})`
+      : `6. Monthly Day-by-Day Attendance Register (${monthKey})`;
+    isLandscape = true;
+    html = buildDetailedAttendanceReportHtml(monthKey, fromDate, toDate, studentFilter, attMode);
   } else if (type === '7') {
-    title = `7. Daily Sabaq, Kalma & Dua Progress (${fromDate} to ${toDate})`;
-    const logs = (state.sabaqLogs || []).filter(l => l.date >= fromDate && l.date <= toDate);
-    html = `<table><thead><tr><th>Date</th><th>Student</th><th>Category</th><th>Lesson</th><th>Performance</th></tr></thead><tbody>` +
-      (logs.length === 0 ? '<tr><td colspan="5">No sabaq logs in this date range.</td></tr>' : logs.map(l => {
+    title = `7. Detailed Sabaq, Kalma & Dua Progress (${fromDate} to ${toDate})`;
+    const logs = (state.sabaqLogs || []).filter(l =>
+      l.date >= fromDate && l.date <= toDate && (studentFilter === 'ALL' || l.studentId === studentFilter)
+    );
+    html = `<table class="w-full bg-white"><thead><tr><th>Date</th><th>Student</th><th>Category</th><th>New Lesson / Sabaq</th><th>Sabqi / Remarks</th><th>Performance</th><th>Photos</th></tr></thead><tbody>` +
+      (logs.length === 0 ? '<tr><td colspan="7">No sabaq logs in this date range.</td></tr>' : logs.map(l => {
         const stu = state.students.find(s => s.id === l.studentId);
-        return `<tr><td>${escapeHtml(l.date)}</td><td>${escapeHtml(stu ? stu.name : 'Student')}</td><td>${escapeHtml(l.category || 'Sabaq')}</td><td>${escapeHtml(l.sabaq)}</td><td>${escapeHtml(l.rating)}</td></tr>`;
+        const imgs = getSabaqImages(l);
+        return `<tr>
+          <td>${escapeHtml(l.date)}</td>
+          <td><strong>${escapeHtml(stu ? `${stu.name} (${stu.rollNo})` : 'Student')}</strong></td>
+          <td>${escapeHtml(l.category || 'Sabaq')}</td>
+          <td>${escapeHtml(l.sabaq)}</td>
+          <td>${escapeHtml(l.revision || '—')}</td>
+          <td>${escapeHtml(l.rating)}</td>
+          <td>${imgs.length > 0 ? `📷 ${imgs.length}` : '—'}</td>
+        </tr>`;
       }).join('')) + `</tbody></table>`;
   } else if (type === '8') {
-    title = `8. Country & Currency Revenue Breakdown`;
+    title = `8. Country & Currency Detailed Revenue Breakdown (${monthKey})`;
     const byCurr = {};
     state.students.filter(s => s.status === 'Active').forEach(s => {
       const c = s.currency || 'PKR';
-      if (!byCurr[c]) byCurr[c] = { count: 0, total: 0 };
+      if (!byCurr[c]) byCurr[c] = { count: 0, collected: 0, pending: 0, total: 0 };
+      const amt = Number(s.monthlyFee) || 0;
+      const isPaid = monthFees[s.id] && monthFees[s.id].status === 'Paid';
       byCurr[c].count++;
-      byCurr[c].total += Number(s.monthlyFee) || 0;
+      byCurr[c].total += amt;
+      if (isPaid) byCurr[c].collected += amt;
+      else byCurr[c].pending += amt;
     });
-    html = `<table><thead><tr><th>Currency</th><th>Active Students</th><th>Total Monthly Billing</th></tr></thead><tbody>` +
-      Object.keys(byCurr).map(c => `<tr><td>${escapeHtml(c)}</td><td>${byCurr[c].count}</td><td>${escapeHtml(c)} ${byCurr[c].total.toLocaleString()}</td></tr>`).join('') +
+    html = `<table class="w-full bg-white"><thead><tr><th>Currency</th><th>Active Students</th><th>Collected (${monthKey})</th><th>Pending (${monthKey})</th><th>Total Monthly Billing</th></tr></thead><tbody>` +
+      Object.keys(byCurr).map(c => `<tr>
+        <td><strong>${escapeHtml(c)}</strong></td>
+        <td>${byCurr[c].count}</td>
+        <td>${escapeHtml(c)} ${byCurr[c].collected.toLocaleString()}</td>
+        <td>${escapeHtml(c)} ${byCurr[c].pending.toLocaleString()}</td>
+        <td><strong>${escapeHtml(c)} ${byCurr[c].total.toLocaleString()}</strong></td>
+      </tr>`).join('') +
       `</tbody></table>`;
   } else if (type === '9') {
-    title = `9. Course & Batch Enrollment Report`;
-    html = `<table><thead><tr><th>Roll No</th><th>Student Name</th><th>Batch</th><th>Course</th><th>Class Time</th></tr></thead><tbody>` +
-      state.students.map(s => `<tr><td>${escapeHtml(s.rollNo)}</td><td>${escapeHtml(s.name)}</td><td>${escapeHtml(s.className)}</td><td>${escapeHtml(s.subjects)}</td><td>${escapeHtml(s.classTime || '—')}</td></tr>`).join('') +
+    title = `9. Course & Batch Detailed Enrollment Analytics`;
+    html = `<table class="w-full bg-white"><thead><tr><th>Roll No</th><th>Student Name</th><th>Country</th><th>Batch</th><th>Course</th><th>Class Time</th><th>Status</th></tr></thead><tbody>` +
+      scopedStudents.map(s => `<tr>
+        <td>${escapeHtml(s.rollNo)}</td>
+        <td><strong>${escapeHtml(s.name)}</strong></td>
+        <td>${escapeHtml(s.notes || 'Pakistan')}</td>
+        <td>${escapeHtml(s.className)}</td>
+        <td>${escapeHtml(s.subjects)}</td>
+        <td>${escapeHtml(s.classTime || '—')}</td>
+        <td>${escapeHtml(s.status)}</td>
+      </tr>`).join('') +
       `</tbody></table>`;
   } else {
-    title = `10. Historical Monthly Financial Snapshots`;
+    title = `10. Historical Monthly Financial Snapshots & Growth`;
     const keys = Object.keys(state.snapshots || {}).sort().reverse();
-    html = `<table><thead><tr><th>Month</th><th>Active Students</th><th>Collected</th><th>Salaries + Expenses</th><th>Net Profit</th></tr></thead><tbody>` +
-      (keys.length === 0 ? '<tr><td colspan="5">No snapshots saved yet. Click Save Monthly Snapshot in Fees or Expenses tab.</td></tr>' : keys.map(k => {
+    html = `<table class="w-full bg-white"><thead><tr><th>Month</th><th>Active Students</th><th>Collected</th><th>Pending</th><th>Salaries + Expenses</th><th>Net Profit</th><th>Margin %</th></tr></thead><tbody>` +
+      (keys.length === 0 ? '<tr><td colspan="7">No snapshots saved yet. Click Save Monthly Snapshot in Fees or Expenses tab.</td></tr>' : keys.map(k => {
         const sn = state.snapshots[k];
-        return `<tr><td>${escapeHtml(k)}</td><td>${sn.activeStudents || 0}</td><td>Rs ${Number(sn.collected).toLocaleString()}</td><td>Rs ${Number((sn.salaries || 0) + (sn.expenses || 0)).toLocaleString()}</td><td>Rs ${Number(sn.netProfit).toLocaleString()}</td></tr>`;
+        const outflow = (Number(sn.salaries) || 0) + (Number(sn.expenses) || 0);
+        const margin = sn.collected > 0 ? Math.round((sn.netProfit / sn.collected) * 100) : 0;
+        return `<tr>
+          <td><strong>${escapeHtml(k)}</strong></td>
+          <td>${sn.activeStudents || 0}</td>
+          <td>Rs ${Number(sn.collected).toLocaleString()}</td>
+          <td>Rs ${Number(sn.pending || 0).toLocaleString()}</td>
+          <td>Rs ${outflow.toLocaleString()}</td>
+          <td><strong>Rs ${Number(sn.netProfit).toLocaleString()}</strong></td>
+          <td>${margin}%</td>
+        </tr>`;
       }).join('')) + `</tbody></table>`;
   }
 
-  document.getElementById('reportPreviewContainer').innerHTML = `<h4 class="font-bold text-slate-900 mb-2">${escapeHtml(title)}</h4>` + html;
-  if (openPdf) openBrandedPdfPrintWindow(title, `Date Range: ${fromDate} to ${toDate} | Month: ${monthKey}`, html);
+  document.getElementById('reportPreviewContainer').innerHTML = `<h4 class="font-bold text-slate-900 mb-3">${escapeHtml(title)}</h4>` + html;
+  if (openPdf) openBrandedPdfPrintWindow(title, `Month: ${monthKey} | Range: ${fromDate} to ${toDate}`, html, isLandscape);
 }
 
 document.getElementById('btnPreviewReport').addEventListener('click', () => generateSelectedReportHtml(false));
 document.getElementById('btnPrintPdfReport').addEventListener('click', () => generateSelectedReportHtml(true));
+['repTypeSelect', 'repMonthInput', 'repStudentFilter', 'repAttModeSelect'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('change', () => generateSelectedReportHtml(false));
+});

@@ -1,6 +1,43 @@
 mountView(`
-  <!-- TAB 11: ADMIN PANEL (BRANDING LOGO, PIN, STAFF ACCOUNTS) -->
+  <!-- TAB 11: ADMIN PANEL (OFFLINE PWA HEALTH, BRANDING LOGO, PIN, STAFF ACCOUNTS) -->
   <section id="viewAdmin" class="hidden space-y-5">
+
+    <!-- Offline PWA & IndexedDB Health Box -->
+    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h2 class="text-sm font-bold text-slate-800 uppercase">📶 100% Offline PWA &amp; Local Storage Diagnostics</h2>
+          <p class="text-xs text-slate-500">Zero external CDN dependencies — poora portal internet ke baghair bhi full speed aur design ke saath chalta hai.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="btnCheckOfflineHealth" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+            🔍 Check Status
+          </button>
+          <button id="btnRefreshOfflineCache" type="button" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white hover:bg-indigo-700 transition">
+            🔄 Refresh Offline Cache
+          </button>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="text-slate-500 font-semibold">Network Status</div>
+          <div id="diagNetworkStatus" class="text-sm font-bold text-emerald-600 mt-1">Checking...</div>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="text-slate-500 font-semibold">Service Worker</div>
+          <div id="diagSwStatus" class="text-sm font-bold text-indigo-600 mt-1">Checking...</div>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="text-slate-500 font-semibold">Offline Cached Files</div>
+          <div id="diagCachedFiles" class="text-sm font-bold text-slate-900 mt-1">0 files</div>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="text-slate-500 font-semibold">IndexedDB Data &amp; Photos</div>
+          <div id="diagStorageUsage" class="text-sm font-bold text-slate-900 mt-1">Calculating...</div>
+        </div>
+      </div>
+    </div>
+
     <!-- Branding & Financial PIN Setup -->
     <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs space-y-4">
       <h2 class="text-sm font-bold text-slate-800 uppercase">🎨 Academy Logo, Header Details &amp; Financial Password Setup (Saved in IndexedDB)</h2>

@@ -1,17 +1,24 @@
 mountView(`
-  <!-- TAB 2: SABAQ & TIMETABLE -->
+  <!-- TAB 2: SABAQ & TIMETABLE (WITH MULTIPLE SCREENSHOTS & FILTERS) -->
   <section id="viewSabaq" class="hidden space-y-4">
     <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
-      <h2 class="text-sm font-bold text-slate-800 uppercase">Class Timetable &amp; Live Links</h2>
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 class="text-sm font-bold text-slate-800 uppercase">Class Timetable &amp; Live Links</h2>
+        <span class="text-xs text-slate-500">Click WA button for 1-tap Class Reminder</span>
+      </div>
       <div id="timetableCardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-1"></div>
     </div>
 
     <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
-      <h2 class="text-sm font-bold text-slate-800 uppercase">Record Daily Sabaq, Kalma, Dua &amp; Screenshot</h2>
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 class="text-sm font-bold text-slate-800 uppercase">Record Daily Sabaq, Kalma, Dua &amp; Multiple Screenshots</h2>
+        <span id="sabaqSelectedCountBadge" class="hidden px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">0 files selected</span>
+      </div>
+
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <div>
           <label class="block text-xs font-medium text-slate-600">Date</label>
-          <input id="sabaqDateInput" type="date" value="2026-11-10" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+          <input id="sabaqDateInput" type="date" value="2026-11-22" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
         </div>
         <div>
           <label class="block text-xs font-medium text-slate-600">Select Student *</label>
@@ -35,8 +42,9 @@ mountView(`
           <input id="sabaqRevisionInput" type="text" placeholder="e.g. Para 1" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
         </div>
         <div>
-          <label class="block text-xs font-medium text-slate-600">Upload Screenshot (IndexedDB)</label>
-          <input id="sabaqProofFile" type="file" accept="image/*" class="mt-1 w-full text-xs text-slate-500 file:py-1.5 file:px-2.5 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700" />
+          <label class="block text-xs font-medium text-slate-600">Upload Multiple Screenshots (IndexedDB)</label>
+          <input id="sabaqProofFile" type="file" accept="image/*" multiple class="mt-1 w-full text-xs text-slate-500 file:py-1.5 file:px-2.5 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700" />
+          <p class="text-[10px] text-slate-400 mt-0.5">Ek saath ya baari-baari multiple photos select kar sakte hain</p>
         </div>
         <div>
           <label class="block text-xs font-medium text-slate-600">Performance</label>
@@ -52,11 +60,33 @@ mountView(`
           </button>
         </div>
       </div>
+
+      <!-- Live Multiple Screenshot Preview Strip -->
+      <div id="sabaqPendingPreviewBox" class="hidden p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-700">📷 Selected Screenshots Preview (Ready to Save)</span>
+          <button id="btnClearSabaqPendingImgs" type="button" class="text-xs font-semibold text-rose-600 hover:underline">Clear All Photos</button>
+        </div>
+        <div id="sabaqPendingPreviewList" class="flex flex-wrap gap-2"></div>
+      </div>
     </div>
 
     <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden p-4 space-y-3">
       <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-200">
-        <h3 class="text-sm font-bold text-slate-800 uppercase">Sabaq Logs</h3>
+        <div class="flex flex-wrap items-center gap-2">
+          <h3 class="text-sm font-bold text-slate-800 uppercase">Sabaq Logs</h3>
+          <select id="filterSabaqStudent" class="px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs bg-white">
+            <option value="ALL">All Students</option>
+          </select>
+          <select id="filterSabaqCategory" class="px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs bg-white">
+            <option value="ALL">All Categories</option>
+            <option value="Quran Sabaq / Lesson">Quran Sabaq / Lesson</option>
+            <option value="Kalma Memorization">Kalma Memorization</option>
+            <option value="Islamic Dua">Islamic Dua</option>
+            <option value="Islamic Information">Islamic Information</option>
+          </select>
+          <input id="searchSabaqInput" type="text" placeholder="Search lesson..." class="px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs" />
+        </div>
         <button id="btnSendWeeklyReport" type="button" class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition">
           📲 Send Weekly Report on WhatsApp
         </button>
@@ -69,7 +99,7 @@ mountView(`
               <th class="py-3 px-4">Student</th>
               <th class="py-3 px-4">Lesson Details</th>
               <th class="py-3 px-4">Sabqi / Remarks</th>
-              <th class="py-3 px-4 text-center">Screenshot</th>
+              <th class="py-3 px-4 text-center">Screenshots</th>
               <th class="py-3 px-4 text-center">Performance</th>
               <th class="py-3 px-4 text-right">Action</th>
             </tr>

@@ -22,10 +22,13 @@ let isFinancialUnlocked = false;
 let activeProofModalContext = null;
 let studentsCurrentPage = 1;
 let studentsPageSize = 10;
-let chartFinInstance = null;
-let chartCourseInstance = null;
 let currentReceiptPhone = '';
 let currentReceiptText = '';
+
+// Multi-Image Gallery & Sabaq Pending Uploads State
+let pendingSabaqImages = [];
+let activeGalleryImages = [];
+let activeGalleryIndex = 0;
 
 const defaultSampleData = {
   students: [

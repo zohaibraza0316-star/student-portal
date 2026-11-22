@@ -35,7 +35,7 @@ async function idbSaveState(data) {
   });
 }
 
-function compressImageFile(file, maxWidth = 700, quality = 0.78) {
+function compressImageFile(file, maxWidth = 800, quality = 0.78) {
   return new Promise((resolve) => {
     const reader = new FileReader();
     reader.onload = (ev) => {
@@ -83,4 +83,22 @@ async function saveState() {
   } catch (e) {
     showToast('Error saving data to IndexedDB!');
   }
+}
+
+function getLocalStorageStats() {
+  const serialized = JSON.stringify(state);
+  const sizeKB = Math.round((serialized.length * 2) / 1024);
+  const sizeLabel = sizeKB >= 1024 ? `${(sizeKB / 1024).toFixed(2)} MB` : `${sizeKB} KB`;
+
+  let photoCount = 0;
+  (state.sabaqLogs || []).forEach(l => {
+    photoCount += getSabaqImages(l).length;
+  });
+  Object.values(state.fees || {}).forEach(mObj => {
+    Object.values(mObj || {}).forEach(rec => {
+      if (rec && rec.proofImage) photoCount++;
+    });
+  });
+  if (state.settings && state.settings.logoDataUrl) photoCount++;
+  return { sizeLabel, photoCount };
 }

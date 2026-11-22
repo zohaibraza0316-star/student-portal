@@ -3,12 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#4f46e5" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Raza Tutors — Enterprise Quran Academy Portal</title>
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="vendor/tailwind-offline.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="min-h-screen flex bg-slate-100">
+
+  <!-- MOBILE SIDEBAR BACKDROP -->
+  <div id="mobileSidebarBackdrop" class="hidden fixed inset-0 z-40 modal-backdrop"></div>
 
   <!-- LEFT COLLAPSIBLE SLIDER SIDEBAR -->
   <aside id="sidebarContainer" class="sidebar-panel bg-slate-900 text-white flex flex-col justify-between shrink-0 min-h-screen sticky top-0 z-40 select-none">
@@ -22,7 +30,7 @@
           </div>
           <div class="brand-text overflow-hidden">
             <h1 id="sidebarAcademyName" class="text-sm font-extrabold tracking-tight text-white truncate">Raza Tutors</h1>
-            <p class="text-[11px] text-emerald-400 font-semibold">IndexedDB Pro v4</p>
+            <p class="text-[11px] text-emerald-400 font-semibold">Offline PWA Pro v5</p>
           </div>
         </div>
       </div>
@@ -70,11 +78,11 @@
         </button>
         <button type="button" data-tab="reports" class="tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition tab-btn-inactive" title="Reports & Analytics">
           <span class="text-base">📊</span>
-          <span class="nav-label">10 PDF Reports &amp; Charts</span>
+          <span class="nav-label">10 Detailed PDF Reports</span>
         </button>
         <button id="tabBtnAdmin" type="button" data-tab="admin" class="tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition tab-btn-inactive" title="Admin & Branding">
           <span class="text-base">⚙️</span>
-          <span class="nav-label">Admin &amp; Logo Setup</span>
+          <span class="nav-label">Admin &amp; Offline Setup</span>
         </button>
       </nav>
     </div>
@@ -93,16 +101,22 @@
     <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
       <div class="px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-3">
-          <button id="btnToggleSidebar" type="button" class="p-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition font-bold text-sm" title="Toggle Full-Width Slider">
+          <button id="btnToggleSidebar" type="button" class="p-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition font-bold text-sm" title="Toggle Sidebar">
             ☰
           </button>
           <div>
-            <h2 id="topBarTitle" class="text-base sm:text-lg font-extrabold text-slate-900">Academy Dashboard</h2>
-            <p id="topBarContacts" class="text-[11px] text-slate-500">Storage: IndexedDB (Unlimited) • Instant Backup Compatible</p>
+            <div class="flex flex-wrap items-center gap-2">
+              <h2 id="topBarTitle" class="text-base sm:text-lg font-extrabold text-slate-900">Academy Dashboard</h2>
+              <span id="pwaStatusBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">🟢 Online</span>
+            </div>
+            <p id="topBarContacts" class="text-[11px] text-slate-500">Storage: IndexedDB (Unlimited) • 100% Offline PWA Ready</p>
           </div>
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
+          <button id="btnInstallPwa" type="button" class="hidden px-3 py-2 rounded-lg text-xs font-bold bg-indigo-600 text-white hover:bg-indigo-700 transition shadow-sm">
+            📲 Install App
+          </button>
           <button id="btnToggleFinLock" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold bg-amber-50 text-amber-800 border border-amber-300 hover:bg-amber-100 transition">
             <span>🔒 Unlock Financials</span>
           </button>
@@ -180,13 +194,13 @@
         </div>
       </section>
 
-      <!-- DYNAMICALLY MOUNTED TAB VIEWS (Loaded synchronously from /views/*.view.js) -->
+      <!-- DYNAMICALLY MOUNTED TAB VIEWS -->
       <div id="appViewsContainer"></div>
 
     </main>
   </div>
 
-  <!-- MODALS CONTAINER (Loaded synchronously from /views/modals.view.js) -->
+  <!-- MODALS CONTAINER -->
   <div id="appModalsContainer"></div>
 
   <!-- TOAST NOTIFICATION -->
@@ -215,6 +229,8 @@
   <script src="js/config.js"></script>
   <script src="js/db.js"></script>
   <script src="js/utils.js"></script>
+  <script src="js/offline-charts.js"></script>
+  <script src="js/pwa.js"></script>
   <script src="js/dashboard.js"></script>
   <script src="js/students.js"></script>
   <script src="js/sabaq.js"></script>

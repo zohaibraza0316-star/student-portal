@@ -2,7 +2,7 @@
 // TAB 4: MONTHLY FEES, SCREENSHOT QUEUE & MODALS
 // ==========================================
 function renderFeesTable() {
-  const monthKey = document.getElementById('feeMonthInput').value || '2026-11';
+  const monthKey = document.getElementById('feeMonthInput').value || getCurrentMonthStr();
   const statusFilter = document.getElementById('filterFeeStatusSelect').value;
   if (!state.fees[monthKey]) state.fees[monthKey] = {};
   const monthFees = state.fees[monthKey];
@@ -70,16 +70,17 @@ function renderFeesTable() {
 }
 
 function openProofModal(studentId) {
-  const monthKey = document.getElementById('feeMonthInput').value || '2026-11';
+  const monthKey = document.getElementById('feeMonthInput').value || getCurrentMonthStr();
   const stu = state.students.find(s => s.id === studentId);
   const rec = state.fees[monthKey] && state.fees[monthKey][studentId];
   if (!stu || !rec || !rec.proofImage) return showToast('No screenshot found.');
   activeProofModalContext = { studentId, monthKey };
-  document.getElementById('screenshotModalTitle').textContent = `${stu.name} — Fee Proof (${monthKey})`;
-  document.getElementById('screenshotModalImg').src = rec.proofImage;
-  document.getElementById('screenshotModalNote').textContent = `Note: ${rec.note || 'None'}`;
-  document.getElementById('screenshotModalAdminBtns').classList.remove('hidden');
-  document.getElementById('screenshotModal').classList.remove('hidden');
+  openImageGalleryModal(
+    [rec.proofImage],
+    `${stu.name} — Fee Proof (${monthKey})`,
+    `Note: ${rec.note || 'None'} | Uploaded: ${rec.submittedAt || '—'}`,
+    true
+  );
 }
 
 const feeProofQueueList = document.getElementById('feeProofQueueList');
@@ -89,14 +90,14 @@ if (feeProofQueueList) {
     if (!btn) return;
     const action = btn.getAttribute('data-action');
     const id = btn.getAttribute('data-id');
-    const monthKey = document.getElementById('feeMonthInput').value || '2026-11';
+    const monthKey = document.getElementById('feeMonthInput').value || getCurrentMonthStr();
     if (action === 'view-proof') {
       openProofModal(id);
     } else if (action === 'approve-fee') {
       state.fees[monthKey][id] = {
         ...state.fees[monthKey][id],
         status: 'Paid',
-        date: new Date().toISOString().slice(0, 10)
+        date: getTodayDateStr()
       };
       saveState();
       renderAll();
@@ -106,9 +107,9 @@ if (feeProofQueueList) {
 }
 
 document.getElementById('btnMarkAllFeesPaid').addEventListener('click', () => {
-  const monthKey = document.getElementById('feeMonthInput').value || '2026-11';
+  const monthKey = document.getElementById('feeMonthInput').value || getCurrentMonthStr();
   if (!state.fees[monthKey]) state.fees[monthKey] = {};
-  const today = new Date().toISOString().slice(0, 10);
+  const today = getTodayDateStr();
   state.students.filter(s => s.status === 'Active').forEach(s => {
     state.fees[monthKey][s.id] = { ...(state.fees[monthKey][s.id] || {}), status: 'Paid', date: today };
   });
@@ -121,7 +122,7 @@ document.getElementById('btnCloseScreenshotModal').addEventListener('click', () 
 document.getElementById('btnApproveProofModal').addEventListener('click', () => {
   if (!activeProofModalContext) return;
   const { studentId, monthKey } = activeProofModalContext;
-  state.fees[monthKey][studentId] = { ...state.fees[monthKey][studentId], status: 'Paid', date: new Date().toISOString().slice(0, 10) };
+  state.fees[monthKey][studentId] = { ...state.fees[monthKey][studentId], status: 'Paid', date: getTodayDateStr() };
   saveState();
   renderAll();
   document.getElementById('screenshotModal').classList.add('hidden');
@@ -142,13 +143,13 @@ document.getElementById('feesTableBody').addEventListener('click', (e) => {
   if (!btn) return;
   const action = btn.getAttribute('data-action');
   const id = btn.getAttribute('data-id');
-  const monthKey = document.getElementById('feeMonthInput').value || '2026-11';
+  const monthKey = document.getElementById('feeMonthInput').value || getCurrentMonthStr();
   if (!state.fees[monthKey]) state.fees[monthKey] = {};
 
   if (action === 'view-proof') openProofModal(id);
   else if (action === 'toggle-fee') {
     const cur = state.fees[monthKey][id] || { status: 'Pending', date: '' };
-    state.fees[monthKey][id] = cur.status === 'Paid' ? { status: 'Pending', date: '' } : { ...cur, status: 'Paid', date: new Date().toISOString().slice(0, 10) };
+    state.fees[monthKey][id] = cur.status === 'Paid' ? { status: 'Pending', date: '' } : { ...cur, status: 'Paid', date: getTodayDateStr() };
     saveState();
     renderAll();
   } else if (action === 'wa-fee-msg') {
@@ -173,7 +174,7 @@ document.getElementById('feesTableBody').addEventListener('click', (e) => {
         <tr><th>Payment Status</th><td><strong>${escapeHtml(rec.status)}</strong> (${escapeHtml(rec.date || 'Unpaid')})</td></tr>
         <tr><th>NayaPay Transfer Details</th><td>ID: ${NAYAPAY_DETAILS.nayapayId} | Acc: ${NAYAPAY_DETAILS.accountNumber} | IBAN: ${NAYAPAY_DETAILS.iban}</td></tr>
       </table>
-    `);
+    `, false);
   }
 });
 

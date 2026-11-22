@@ -1,5 +1,5 @@
 // ==========================================
-// TAB 11: ADMIN BRANDING, LOGO & STAFF USERS
+// TAB 11: ADMIN BRANDING, OFFLINE HEALTH & STAFF USERS
 // ==========================================
 document.getElementById('btnSaveBranding').addEventListener('click', async () => {
   const name = document.getElementById('brandNameInput').value.trim() || 'Raza Tutors — Online Quran Academy';
@@ -26,6 +26,35 @@ document.getElementById('btnSaveBranding').addEventListener('click', async () =>
   showToast('Logo, Header Details & Financial PIN saved in IndexedDB!');
 });
 
+const btnCheckOfflineHealth = document.getElementById('btnCheckOfflineHealth');
+if (btnCheckOfflineHealth) {
+  btnCheckOfflineHealth.addEventListener('click', () => {
+    if (typeof checkOfflineDiagnostics === 'function') checkOfflineDiagnostics();
+    showToast('Offline & IndexedDB status updated!');
+  });
+}
+
+const btnRefreshOfflineCache = document.getElementById('btnRefreshOfflineCache');
+if (btnRefreshOfflineCache) {
+  btnRefreshOfflineCache.addEventListener('click', async () => {
+    if (!navigator.onLine) return showToast('Internet connect karein cache refresh karne ke liye!');
+    try {
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
+      }
+      if ('serviceWorker' in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(r => r.unregister()));
+      }
+      showToast('Offline Cache cleared! Reloading fresh files...');
+      setTimeout(() => window.location.reload(), 700);
+    } catch (e) {
+      showToast('Cache refresh error.');
+    }
+  });
+}
+
 function getRegisteredUsers() {
   try {
     return JSON.parse(localStorage.getItem(USERS_KEY)) || [];
@@ -45,18 +74,26 @@ function renderAdminUsersTable() {
   const badge = document.getElementById('adminTotalUsersBadge');
   if (badge) badge.textContent = `Total Accounts: ${users.length}`;
 
-  tbody.innerHTML = users.map((u, i) => `
-    <tr>
-      <td class="py-2.5 px-4 font-semibold">${escapeHtml(u.name)}</td>
-      <td class="py-2.5 px-4">${escapeHtml(u.email)}</td>
-      <td class="py-2.5 px-4 font-mono text-xs">${escapeHtml(u.password)}</td>
-      <td class="py-2.5 px-4">${escapeHtml(u.role || 'Admin')}</td>
-      <td class="py-2.5 px-4 text-center">${escapeHtml(u.status || 'Active')}</td>
-      <td class="py-2.5 px-4 text-right">
-        ${i === 0 ? '<span class="text-xs text-slate-400 italic">Owner</span>' : `<button type="button" data-del-user="${escapeHtml(u.id)}" class="text-xs text-rose-600 font-bold hover:underline">Delete</button>`}
-      </td>
-    </tr>
-  `).join('');
+  tbody.innerHTML = users.map((u, i) => {
+    const isBlocked = u.status === 'Blocked';
+    return `
+      <tr>
+        <td class="py-2.5 px-4 font-semibold">${escapeHtml(u.name)}</td>
+        <td class="py-2.5 px-4">${escapeHtml(u.email)}</td>
+        <td class="py-2.5 px-4 font-mono text-xs">${escapeHtml(u.password)}</td>
+        <td class="py-2.5 px-4">${escapeHtml(u.role || 'Admin')}</td>
+        <td class="py-2.5 px-4 text-center">
+          <span class="px-2 py-0.5 rounded-full text-xs font-semibold ${isBlocked ? 'bg-rose-50 text-rose-700' : 'bg-emerald-50 text-emerald-700'}">${escapeHtml(u.status || 'Active')}</span>
+        </td>
+        <td class="py-2.5 px-4 text-right space-x-2">
+          ${i === 0 ? '<span class="text-xs text-slate-400 italic">Owner</span>' : `
+            <button type="button" data-toggle-user="${escapeHtml(u.id)}" class="text-xs text-amber-700 font-bold hover:underline">${isBlocked ? 'Unblock' : 'Block'}</button>
+            <button type="button" data-del-user="${escapeHtml(u.id)}" class="text-xs text-rose-600 font-bold hover:underline">Delete</button>
+          `}
+        </td>
+      </tr>
+    `;
+  }).join('');
 }
 
 const btnAdminCreateUser = document.getElementById('btnAdminCreateUser');
@@ -78,7 +115,7 @@ if (btnAdminCreateUser) {
       password,
       role,
       status: 'Active',
-      createdAt: new Date().toISOString().slice(0, 10)
+      createdAt: getTodayDateStr()
     });
     saveRegisteredUsers(users);
     document.getElementById('adminNewUserName').value = '';
@@ -92,12 +129,21 @@ if (btnAdminCreateUser) {
 const adminUsersTableBody = document.getElementById('adminUsersTableBody');
 if (adminUsersTableBody) {
   adminUsersTableBody.addEventListener('click', (e) => {
-    const btn = e.target.closest('button[data-del-user]');
-    if (!btn) return;
-    const id = btn.getAttribute('data-del-user');
-    const users = getRegisteredUsers().filter(u => u.id !== id);
-    saveRegisteredUsers(users);
-    renderAdminUsersTable();
-    showToast('Account deleted!');
+    const delBtn = e.target.closest('button[data-del-user]');
+    if (delBtn) {
+      const id = delBtn.getAttribute('data-del-user');
+      saveRegisteredUsers(getRegisteredUsers().filter(u => u.id !== id));
+      renderAdminUsersTable();
+      showToast('Account deleted!');
+      return;
+    }
+    const togBtn = e.target.closest('button[data-toggle-user]');
+    if (togBtn) {
+      const id = togBtn.getAttribute('data-toggle-user');
+      const users = getRegisteredUsers().map(u => u.id === id ? { ...u, status: u.status === 'Blocked' ? 'Active' : 'Blocked' } : u);
+      saveRegisteredUsers(users);
+      renderAdminUsersTable();
+      showToast('Account status updated!');
+    }
   });
 }

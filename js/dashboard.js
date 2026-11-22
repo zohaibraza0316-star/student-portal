@@ -36,24 +36,44 @@ function applyBrandingUI() {
 function updateFilterDropdowns() {
   const batchSelect = document.getElementById('filterClassSelect');
   const courseSelect = document.getElementById('filterCourseSelect');
-  if (!batchSelect || !courseSelect) return;
-
-  const curBatch = batchSelect.value;
-  const curCourse = courseSelect.value;
+  const attBatch = document.getElementById('attBatchFilter');
+  const repStudent = document.getElementById('repStudentFilter');
+  const sabaqFilterStu = document.getElementById('filterSabaqStudent');
 
   const batches = Array.from(new Set(state.students.map(s => (s.className || '').trim()).filter(Boolean)));
   const courses = Array.from(new Set(state.students.map(s => (s.subjects || '').trim()).filter(Boolean)));
 
-  batchSelect.innerHTML = '<option value="ALL">All Batches</option>' + batches.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
-  courseSelect.innerHTML = '<option value="ALL">All Courses</option>' + courses.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
-
-  if (batches.includes(curBatch)) batchSelect.value = curBatch;
-  if (courses.includes(curCourse)) courseSelect.value = curCourse;
+  if (batchSelect) {
+    const cur = batchSelect.value;
+    batchSelect.innerHTML = '<option value="ALL">All Batches</option>' + batches.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+    if (batches.includes(cur)) batchSelect.value = cur;
+  }
+  if (courseSelect) {
+    const cur = courseSelect.value;
+    courseSelect.innerHTML = '<option value="ALL">All Courses</option>' + courses.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+    if (courses.includes(cur)) courseSelect.value = cur;
+  }
+  if (attBatch) {
+    const cur = attBatch.value;
+    attBatch.innerHTML = '<option value="ALL">All Batches</option>' + batches.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+    if (batches.includes(cur)) attBatch.value = cur;
+  }
+  const studentOptions = '<option value="ALL">All Students</option>' + state.students.map(s => `<option value="${escapeHtml(s.id)}">${escapeHtml(s.rollNo)} — ${escapeHtml(s.name)}</option>`).join('');
+  if (repStudent) {
+    const cur = repStudent.value;
+    repStudent.innerHTML = studentOptions;
+    if (cur && state.students.some(s => s.id === cur)) repStudent.value = cur;
+  }
+  if (sabaqFilterStu) {
+    const cur = sabaqFilterStu.value;
+    sabaqFilterStu.innerHTML = studentOptions;
+    if (cur && state.students.some(s => s.id === cur)) sabaqFilterStu.value = cur;
+  }
 }
 
 function renderSummaryStats() {
   const total = state.students.length;
-  const monthKey = document.getElementById('feeMonthInput').value || '2026-11';
+  const monthKey = document.getElementById('feeMonthInput').value || getCurrentMonthStr();
   const m = getMonthMetrics(monthKey);
 
   document.getElementById('statTotalStudents').textContent = String(total);
@@ -74,7 +94,7 @@ function renderSummaryStats() {
     navBadge.classList.toggle('hidden', m.proofCount === 0);
   }
 
-  const dateKey = document.getElementById('attendanceDateInput').value || '2026-11-10';
+  const dateKey = document.getElementById('attendanceDateInput').value || getTodayDateStr();
   const dayAtt = state.attendance[dateKey] || {};
   let presentCount = 0;
   state.students.filter(s => s.status === 'Active').forEach(s => {

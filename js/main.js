@@ -7,6 +7,34 @@ if (localStorage.getItem(THEME_KEY) === 'true') {
   document.body.classList.add('dark-mode');
 }
 
+// Smart Today Date Defaults
+(function setSmartDefaultDates() {
+  const today = getTodayDateStr();
+  const month = getCurrentMonthStr();
+  const firstOfMonth = `${month}-01`;
+  const [y, m] = month.split('-').map(Number);
+  const lastDay = new Date(y, m, 0).getDate();
+  const lastOfMonth = `${month}-${String(lastDay).padStart(2, '0')}`;
+
+  const dateMap = {
+    attendanceDateInput: today,
+    sabaqDateInput: today,
+    expDateInput: today,
+    studentJoinDateInput: today,
+    feeMonthInput: month,
+    salMonth: month,
+    repMonthInput: month,
+    repFromDate: firstOfMonth,
+    repToDate: lastOfMonth,
+    parentFromDate: firstOfMonth,
+    parentToDate: lastOfMonth
+  };
+  Object.keys(dateMap).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = dateMap[id];
+  });
+})();
+
 // Verify Login Session
 const activeUserRaw = localStorage.getItem(SESSION_KEY);
 if (!activeUserRaw) {
@@ -25,11 +53,21 @@ if (!activeUserRaw) {
   } catch (e) {}
 }
 
-// Collapsible Slider Sidebar Toggle
+// Collapsible Sidebar & Mobile Drawer Toggle
 const btnToggleSidebar = document.getElementById('btnToggleSidebar');
+const mobileSidebarBackdrop = document.getElementById('mobileSidebarBackdrop');
 if (btnToggleSidebar) {
   btnToggleSidebar.addEventListener('click', () => {
-    document.body.classList.toggle('sidebar-collapsed');
+    if (window.innerWidth < 768) {
+      document.body.classList.toggle('mobile-sidebar-open');
+    } else {
+      document.body.classList.toggle('sidebar-collapsed');
+    }
+  });
+}
+if (mobileSidebarBackdrop) {
+  mobileSidebarBackdrop.addEventListener('click', () => {
+    document.body.classList.remove('mobile-sidebar-open');
   });
 }
 
@@ -45,6 +83,9 @@ if (btnDarkModeToggle) {
     document.body.classList.toggle('dark-mode');
     localStorage.setItem(THEME_KEY, document.body.classList.contains('dark-mode'));
     updateDarkBtnLabel();
+    if (!document.getElementById('viewReports').classList.contains('hidden')) {
+      renderChartsAndReports();
+    }
   });
 }
 
@@ -84,6 +125,17 @@ if (btnToggleFinLock) {
   });
 }
 
+// Close Modals on Escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    ['screenshotModal', 'studentModal', 'receiptModal'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('hidden');
+    });
+    document.body.classList.remove('mobile-sidebar-open');
+  }
+});
+
 // Navigation Tabs Switching
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -107,8 +159,11 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     document.getElementById('viewReports').classList.toggle('hidden', tab !== 'reports');
     document.getElementById('viewAdmin').classList.toggle('hidden', tab !== 'admin');
 
+    document.body.classList.remove('mobile-sidebar-open');
+
     if (tab === 'reports') renderChartsAndReports();
     if (tab === 'parentview') renderStudentDateRangeReport();
+    if (tab === 'admin' && typeof checkOfflineDiagnostics === 'function') checkOfflineDiagnostics();
   });
 });
 
@@ -130,4 +185,5 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     }
   } catch (e) {}
   renderAll();
+  if (typeof checkOfflineDiagnostics === 'function') checkOfflineDiagnostics();
 })();

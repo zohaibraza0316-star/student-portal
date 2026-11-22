@@ -1,14 +1,27 @@
 mountModals(`
-  <!-- SCREENSHOT PREVIEW MODAL -->
+  <!-- SCREENSHOT / MULTI-IMAGE GALLERY PREVIEW MODAL -->
   <div id="screenshotModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-5 shadow-xl border border-slate-200 space-y-3">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-5 shadow-xl border border-slate-200 space-y-3">
       <div class="flex items-center justify-between border-b border-slate-200 pb-2.5">
-        <h3 id="screenshotModalTitle" class="text-base font-bold text-slate-900">Verification Image</h3>
-        <button id="btnCloseScreenshotModal" type="button" class="text-slate-400 hover:text-slate-600 text-xl font-bold px-2">&times;</button>
+        <div class="flex items-center gap-2">
+          <h3 id="screenshotModalTitle" class="text-base font-bold text-slate-900">Verification Image</h3>
+          <span id="screenshotGalleryCounter" class="hidden px-2 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700">1 / 1</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <a id="btnDownloadModalImg" href="#" download="screenshot.jpg" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200">⬇️ Download</a>
+          <button id="btnCloseScreenshotModal" type="button" class="text-slate-400 hover:text-slate-600 text-xl font-bold px-2">&times;</button>
+        </div>
       </div>
-      <div class="max-h-[65vh] overflow-y-auto text-center bg-slate-100 rounded-xl p-2">
-        <img id="screenshotModalImg" src="" alt="Proof" class="max-w-full mx-auto rounded-lg" />
+
+      <div class="relative max-h-[60vh] overflow-y-auto text-center bg-slate-100 rounded-xl p-2 flex items-center justify-center">
+        <button id="btnGalleryPrev" type="button" class="hidden absolute left-2 top-1/2 px-3 py-2 rounded-lg bg-slate-900 text-white text-xs font-bold opacity-80 hover:opacity-100">◀</button>
+        <img id="screenshotModalImg" src="" alt="Proof" class="max-w-full max-h-[56vh] mx-auto rounded-lg object-contain" />
+        <button id="btnGalleryNext" type="button" class="hidden absolute right-2 top-1/2 px-3 py-2 rounded-lg bg-slate-900 text-white text-xs font-bold opacity-80 hover:opacity-100">▶</button>
       </div>
+
+      <!-- Thumbnail Strip for Multiple Photos -->
+      <div id="screenshotGalleryThumbs" class="hidden flex flex-wrap items-center justify-center gap-2 pt-1"></div>
+
       <p id="screenshotModalNote" class="text-xs text-slate-600 font-medium"></p>
       <div id="screenshotModalAdminBtns" class="flex justify-end gap-2 pt-2 border-t border-slate-200">
         <button id="btnRejectProofModal" type="button" class="px-4 py-2 rounded-lg text-xs font-semibold bg-rose-50 text-rose-700">Reject</button>

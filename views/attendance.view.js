@@ -5,15 +5,30 @@ mountView(`
       <div class="flex flex-wrap items-center gap-3">
         <div>
           <label for="attendanceDateInput" class="block text-xs font-semibold text-slate-500 uppercase">Attendance Date</label>
-          <input id="attendanceDateInput" type="date" value="2026-11-10" class="mt-1 px-3 py-1.5 rounded-lg border border-slate-300 text-sm" />
+          <input id="attendanceDateInput" type="date" value="2026-11-22" class="mt-1 px-3 py-1.5 rounded-lg border border-slate-300 text-sm" />
         </div>
-        <div id="attendanceDailySummary" class="text-xs sm:text-sm text-slate-600 font-medium pt-4">
+        <div>
+          <label for="attBatchFilter" class="block text-xs font-semibold text-slate-500 uppercase">Filter Batch</label>
+          <select id="attBatchFilter" class="mt-1 px-3 py-1.5 rounded-lg border border-slate-300 text-sm bg-white">
+            <option value="ALL">All Batches</option>
+          </select>
+        </div>
+        <div>
+          <label for="attSearchInput" class="block text-xs font-semibold text-slate-500 uppercase">Search Student</label>
+          <input id="attSearchInput" type="text" placeholder="Name or Roll..." class="mt-1 px-3 py-1.5 rounded-lg border border-slate-300 text-sm" />
+        </div>
+        <div id="attendanceDailySummary" class="text-xs sm:text-sm text-slate-700 font-bold pt-4">
           Present: 0 | Absent: 0 | Leave: 0
         </div>
       </div>
-      <button id="btnMarkAllPresent" type="button" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 transition">
-        Mark All Present
-      </button>
+      <div class="flex flex-wrap items-center gap-2">
+        <button id="btnOpenMonthlyAttReport" type="button" class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition">
+          📅 View Monthly Day-by-Day Report
+        </button>
+        <button id="btnMarkAllPresent" type="button" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 transition">
+          Mark All Present
+        </button>
+      </div>
     </div>
 
     <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
@@ -25,7 +40,7 @@ mountView(`
               <th class="py-3 px-4">Student Name</th>
               <th class="py-3 px-4">Batch</th>
               <th class="py-3 px-4 text-center">Overall Attendance</th>
-              <th class="py-3 px-4 text-right">Mark Status</th>
+              <th class="py-3 px-4 text-right">Mark Status &amp; WA Alert</th>
             </tr>
           </thead>
           <tbody id="attendanceTableBody" class="divide-y divide-slate-200 text-sm"></tbody>

@@ -3,8 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login — Student Management Portal</title>
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <meta name="theme-color" content="#4f46e5" />
+  <title>Login — Raza Tutors Portal</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="vendor/tailwind-offline.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="min-h-screen auth-bg flex items-center justify-center p-4">
@@ -12,11 +16,11 @@
   <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-md w-full overflow-hidden">
     <!-- Top Branding -->
     <div class="bg-slate-900 p-6 text-center">
-      <div class="w-12 h-12 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold text-xl mx-auto shadow-md">
-        SM
+      <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-indigo-600 to-emerald-500 flex items-center justify-center text-white font-bold text-xl mx-auto shadow-md">
+        RT
       </div>
-      <h1 class="text-xl font-bold text-white mt-3">Student Management Portal</h1>
-      <p class="text-xs text-slate-400 mt-1">Login or Create an Admin Account to Continue</p>
+      <h1 class="text-xl font-bold text-white mt-3">Raza Tutors Portal</h1>
+      <p class="text-xs text-slate-400 mt-1">Login or Create an Admin Account • 100% Offline Ready</p>
     </div>
 
     <!-- Toggle Buttons (Login vs Create Account) -->
@@ -83,6 +87,7 @@
     </form>
   </div>
 
+  <script src="js/pwa.js"></script>
   <script src="auth.js"></script>
 </body>
 </html>
