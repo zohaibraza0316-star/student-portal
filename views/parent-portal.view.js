@@ -17,11 +17,11 @@ mountView(`
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-600">From Date</label>
-          <input id="parentFromDate" type="date" value="2026-11-01" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+          <input id="parentFromDate" type="date" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-600">To Date</label>
-          <input id="parentToDate" type="date" value="2026-11-30" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+          <input id="parentToDate" type="date" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
         </div>
       </div>
 

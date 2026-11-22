@@ -1,11 +1,16 @@
 mountView(`
-  <!-- TAB 6: DAILY ATTENDANCE -->
+  <!-- TAB 6: DAILY ATTENDANCE (ALWAYS LIVE TODAY'S DATE) -->
   <section id="viewAttendance" class="hidden space-y-4">
     <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
       <div class="flex flex-wrap items-center gap-3">
         <div>
-          <label for="attendanceDateInput" class="block text-xs font-semibold text-slate-500 uppercase">Attendance Date</label>
-          <input id="attendanceDateInput" type="date" value="2026-11-22" class="mt-1 px-3 py-1.5 rounded-lg border border-slate-300 text-sm" />
+          <label for="attendanceDateInput" class="block text-xs font-semibold text-slate-500 uppercase">Attendance Date (Auto Today)</label>
+          <div class="flex items-center gap-1.5 mt-1">
+            <input id="attendanceDateInput" type="date" class="px-3 py-1.5 rounded-lg border border-slate-300 text-sm font-semibold" />
+            <button id="btnAttJumpToday" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 transition" title="Jump to Today's Date">
+              📅 Today
+            </button>
+          </div>
         </div>
         <div>
           <label for="attBatchFilter" class="block text-xs font-semibold text-slate-500 uppercase">Filter Batch</label>
@@ -17,8 +22,9 @@ mountView(`
           <label for="attSearchInput" class="block text-xs font-semibold text-slate-500 uppercase">Search Student</label>
           <input id="attSearchInput" type="text" placeholder="Name or Roll..." class="mt-1 px-3 py-1.5 rounded-lg border border-slate-300 text-sm" />
         </div>
-        <div id="attendanceDailySummary" class="text-xs sm:text-sm text-slate-700 font-bold pt-4">
-          Present: 0 | Absent: 0 | Leave: 0
+        <div class="pt-4">
+          <div id="attendanceDailySummary" class="text-xs sm:text-sm text-slate-700 font-bold">Present: 0 | Absent: 0 | Leave: 0</div>
+          <div id="attendanceTodayLabel" class="text-[11px] text-indigo-600 font-semibold"></div>
         </div>
       </div>
       <div class="flex flex-wrap items-center gap-2">

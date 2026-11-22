@@ -44,15 +44,15 @@ mountView(`
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-600">Billing / Attendance Month</label>
-          <input id="repMonthInput" type="month" value="2026-11" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+          <input id="repMonthInput" type="month" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-600">From Date (Range Reports)</label>
-          <input id="repFromDate" type="date" value="2026-11-01" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+          <input id="repFromDate" type="date" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-600">To Date (Range Reports)</label>
-          <input id="repToDate" type="date" value="2026-11-30" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+          <input id="repToDate" type="date" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
         </div>
       </div>
 

@@ -1,5 +1,5 @@
 // ==========================================
-// TAB 2: SABAQ & TIMETABLE (MULTI-SCREENSHOT & FILTERS)
+// TAB 2: SABAQ & TIMETABLE (BULLETPROOF MULTI-SCREENSHOT & FILTERS)
 // ==========================================
 function renderPendingSabaqPreviews() {
   const box = document.getElementById('sabaqPendingPreviewBox');
@@ -22,9 +22,35 @@ function renderPendingSabaqPreviews() {
   list.innerHTML = pendingSabaqImages.map((src, idx) => `
     <div class="relative inline-block">
       <img src="${src}" alt="Preview ${idx + 1}" class="w-16 h-16 object-cover rounded-lg border border-slate-300" />
-      <button type="button" data-remove-pending-img="${idx}" class="absolute top-0 right-0 px-1.5 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-bold" title="Remove">×</button>
+      <button type="button" data-remove-pending-img="${idx}" class="absolute top-0 right-0 px-1.5 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-bold" title="Remove Photo">×</button>
     </div>
   `).join('');
+}
+
+async function processMultipleSabaqFiles(fileList) {
+  const files = Array.from(fileList || []).filter(f => f && (!f.type || f.type.startsWith('image/')));
+  if (!files.length) return;
+  const saveBtn = document.getElementById('btnAddSabaqRecord');
+  isCompressingSabaqPhotos = true;
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Compressing...';
+  }
+  showToast(`Processing ${files.length} screenshot(s)...`);
+  try {
+    for (const file of files) {
+      const compressed = await compressImageFile(file, 800, 0.76);
+      pendingSabaqImages.push(compressed);
+    }
+    renderPendingSabaqPreviews();
+    showToast(`Total ${pendingSabaqImages.length} screenshot(s) ready! Aur photos add kar sakte hain ya Save karein.`);
+  } finally {
+    isCompressingSabaqPhotos = false;
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.textContent = '+ Save Sabaq';
+    }
+  }
 }
 
 function renderSabaqAndTimetable() {
@@ -89,10 +115,13 @@ function renderSabaqAndTimetable() {
         <td class="py-3 px-4 font-semibold text-slate-900">${escapeHtml(stu ? `${stu.name} (${stu.rollNo})` : 'Removed')}</td>
         <td class="py-3 px-4 font-medium text-slate-800">${escapeHtml(item.sabaq)}</td>
         <td class="py-3 px-4 text-slate-600 text-xs">${escapeHtml(item.revision || '—')}</td>
-        <td class="py-3 px-4 text-center">
-          ${imgs.length > 0
-            ? `<button type="button" data-action="view-sabaq-proof" data-id="${escapeHtml(item.id)}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100">🖼️ ${imgs.length} Photo${imgs.length > 1 ? 's' : ''}</button>`
-            : '<span class="text-xs text-slate-400">—</span>'}
+        <td class="py-3 px-4 text-center whitespace-nowrap">
+          <div class="inline-flex items-center gap-1">
+            ${imgs.length > 0
+              ? `<button type="button" data-action="view-sabaq-proof" data-id="${escapeHtml(item.id)}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100">🖼️ ${imgs.length} Photo${imgs.length > 1 ? 's' : ''}</button>`
+              : ''}
+            <button type="button" data-action="add-more-sabaq-photos" data-id="${escapeHtml(item.id)}" class="px-2 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200" title="Add More Screenshots">+ Photo</button>
+          </div>
         </td>
         <td class="py-3 px-4 text-center"><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700">${escapeHtml(item.rating)}</span></td>
         <td class="py-3 px-4 text-right whitespace-nowrap space-x-1">
@@ -104,20 +133,64 @@ function renderSabaqAndTimetable() {
   }).join('');
 }
 
-// Multiple File Selection Handler (Appends so user can select 1 by 1 or multiple at once!)
+// Multi-File Selection Listener
 const sabaqProofFileInput = document.getElementById('sabaqProofFile');
 if (sabaqProofFileInput) {
   sabaqProofFileInput.addEventListener('change', async (e) => {
-    const files = Array.from(e.target.files || []);
-    if (!files.length) return;
-    showToast(`Compressing ${files.length} screenshot(s)...`);
-    for (const file of files) {
-      const compressed = await compressImageFile(file, 800, 0.76);
-      pendingSabaqImages.push(compressed);
-    }
+    await processMultipleSabaqFiles(e.target.files);
     sabaqProofFileInput.value = '';
-    renderPendingSabaqPreviews();
-    showToast(`${pendingSabaqImages.length} screenshot(s) ready to save!`);
+  });
+}
+
+// Drag & Drop support on Dropzone
+const sabaqDropzone = document.getElementById('sabaqDropzone');
+if (sabaqDropzone) {
+  ['dragenter', 'dragover'].forEach(evt => {
+    sabaqDropzone.addEventListener(evt, (e) => {
+      e.preventDefault();
+      sabaqDropzone.classList.add('dropzone-active');
+    });
+  });
+  ['dragleave', 'drop'].forEach(evt => {
+    sabaqDropzone.addEventListener(evt, (e) => {
+      e.preventDefault();
+      sabaqDropzone.classList.remove('dropzone-active');
+    });
+  });
+  sabaqDropzone.addEventListener('drop', async (e) => {
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+      await processMultipleSabaqFiles(e.dataTransfer.files);
+    }
+  });
+}
+
+// "+ Add More Photos" button in preview strip
+const btnAddAnotherSabaqPhoto = document.getElementById('btnAddAnotherSabaqPhoto');
+if (btnAddAnotherSabaqPhoto && sabaqProofFileInput) {
+  btnAddAnotherSabaqPhoto.addEventListener('click', () => sabaqProofFileInput.click());
+}
+
+// Add More Photos to an EXISTING saved Sabaq record
+const sabaqAddMoreExistingFile = document.getElementById('sabaqAddMoreExistingFile');
+if (sabaqAddMoreExistingFile) {
+  sabaqAddMoreExistingFile.addEventListener('change', async (e) => {
+    const files = Array.from(e.target.files || []).filter(f => f && (!f.type || f.type.startsWith('image/')));
+    if (!files.length || !activeExistingSabaqPhotoId) return;
+    const item = (state.sabaqLogs || []).find(x => x.id === activeExistingSabaqPhotoId);
+    if (!item) return;
+
+    showToast(`Adding ${files.length} photo(s)...`);
+    const existing = getSabaqImages(item);
+    for (const file of files) {
+      existing.push(await compressImageFile(file, 800, 0.76));
+    }
+    item.proofImages = existing;
+    item.proofImage = existing[0] || '';
+    sabaqAddMoreExistingFile.value = '';
+    activeExistingSabaqPhotoId = null;
+    await saveState();
+    renderSabaqAndTimetable();
+    showToast(`Total ${existing.length} photo(s) saved in this Sabaq log!`);
   });
 }
 
@@ -134,7 +207,14 @@ if (sabaqPendingPreviewList) {
 
 const btnClearSabaqPendingImgs = document.getElementById('btnClearSabaqPendingImgs');
 if (btnClearSabaqPendingImgs) {
-  btnClearSabaqPendingImgs.addEventListener('click', () => {
+  btnClearSabaqPendingImgs.addEventListener('click', async () => {
+    const ok = await showConfirmModal({
+      title: 'Clear All Selected Photos?',
+      message: `Kya aap saari ${pendingSabaqImages.length} selected screenshot(s) remove karna chahte hain?`,
+      confirmText: 'Haan, Clear Karein',
+      variant: 'danger'
+    });
+    if (!ok) return;
     pendingSabaqImages = [];
     renderPendingSabaqPreviews();
   });
@@ -172,6 +252,7 @@ if (btnSendWeeklyReport) {
 }
 
 document.getElementById('btnAddSabaqRecord').addEventListener('click', async () => {
+  if (isCompressingSabaqPhotos) return showToast('Photos compress ho rahi hain, 1 second wait karein...');
   const date = document.getElementById('sabaqDateInput').value || getTodayDateStr();
   const studentId = document.getElementById('sabaqStudentSelect').value;
   const category = document.getElementById('sabaqCategorySelect').value;
@@ -203,7 +284,7 @@ document.getElementById('btnAddSabaqRecord').addEventListener('click', async () 
   showToast(`Sabaq aur ${savedImages.length} screenshot(s) IndexedDB mein save ho gaye!`);
 });
 
-document.getElementById('sabaqTableBody').addEventListener('click', (e) => {
+document.getElementById('sabaqTableBody').addEventListener('click', async (e) => {
   const btn = e.target.closest('button[data-action]');
   if (!btn) return;
   const action = btn.getAttribute('data-action');
@@ -212,10 +293,20 @@ document.getElementById('sabaqTableBody').addEventListener('click', (e) => {
   if (!item) return;
 
   if (action === 'delete-sabaq') {
+    const ok = await showConfirmModal({
+      title: 'Delete Sabaq Record?',
+      message: `Kya aap "${item.sabaq}" (${item.date}) ka record aur us ki photos delete karna chahte hain?`,
+      confirmText: 'Haan, Delete Karein',
+      variant: 'danger'
+    });
+    if (!ok) return;
     state.sabaqLogs = state.sabaqLogs.filter(x => x.id !== id);
-    saveState();
+    await saveState();
     renderSabaqAndTimetable();
     showToast('Sabaq record deleted.');
+  } else if (action === 'add-more-sabaq-photos') {
+    activeExistingSabaqPhotoId = id;
+    if (sabaqAddMoreExistingFile) sabaqAddMoreExistingFile.click();
   } else if (action === 'view-sabaq-proof') {
     const imgs = getSabaqImages(item);
     openImageGalleryModal(

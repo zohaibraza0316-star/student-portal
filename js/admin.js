@@ -38,6 +38,13 @@ const btnRefreshOfflineCache = document.getElementById('btnRefreshOfflineCache')
 if (btnRefreshOfflineCache) {
   btnRefreshOfflineCache.addEventListener('click', async () => {
     if (!navigator.onLine) return showToast('Internet connect karein cache refresh karne ke liye!');
+    const ok = await showConfirmModal({
+      title: 'Refresh Offline Cache?',
+      message: 'Kya aap offline cache clear karke fresh files download karna chahte hain? (Aapka IndexedDB data bilkul safe rahega)',
+      confirmText: 'Haan, Refresh Karein',
+      variant: 'primary'
+    });
+    if (!ok) return;
     try {
       if ('caches' in window) {
         const keys = await caches.keys();
@@ -128,10 +135,18 @@ if (btnAdminCreateUser) {
 
 const adminUsersTableBody = document.getElementById('adminUsersTableBody');
 if (adminUsersTableBody) {
-  adminUsersTableBody.addEventListener('click', (e) => {
+  adminUsersTableBody.addEventListener('click', async (e) => {
     const delBtn = e.target.closest('button[data-del-user]');
     if (delBtn) {
       const id = delBtn.getAttribute('data-del-user');
+      const target = getRegisteredUsers().find(u => u.id === id);
+      const ok = await showConfirmModal({
+        title: 'Delete Staff Account?',
+        message: `Kya aap "${target ? target.name : 'this user'}" ka login account permanently delete karna chahte hain?`,
+        confirmText: 'Haan, Delete Karein',
+        variant: 'danger'
+      });
+      if (!ok) return;
       saveRegisteredUsers(getRegisteredUsers().filter(u => u.id !== id));
       renderAdminUsersTable();
       showToast('Account deleted!');
@@ -140,7 +155,16 @@ if (adminUsersTableBody) {
     const togBtn = e.target.closest('button[data-toggle-user]');
     if (togBtn) {
       const id = togBtn.getAttribute('data-toggle-user');
-      const users = getRegisteredUsers().map(u => u.id === id ? { ...u, status: u.status === 'Blocked' ? 'Active' : 'Blocked' } : u);
+      const target = getRegisteredUsers().find(u => u.id === id);
+      const nextSt = target && target.status === 'Blocked' ? 'Active' : 'Blocked';
+      const ok = await showConfirmModal({
+        title: nextSt === 'Blocked' ? 'Block Staff Account?' : 'Unblock Staff Account?',
+        message: `Kya aap "${target ? target.name : 'this user'}" ko ${nextSt === 'Blocked' ? 'Block' : 'Unblock'} karna chahte hain?`,
+        confirmText: nextSt === 'Blocked' ? 'Haan, Block Karein' : 'Haan, Unblock Karein',
+        variant: nextSt === 'Blocked' ? 'danger' : 'success'
+      });
+      if (!ok) return;
+      const users = getRegisteredUsers().map(u => u.id === id ? { ...u, status: nextSt } : u);
       saveRegisteredUsers(users);
       renderAdminUsersTable();
       showToast('Account status updated!');

@@ -41,8 +41,16 @@ function renderExpensesAndSnapshots() {
   }
 }
 
-function saveSnapshotForCurrentMonth() {
-  const monthKey = document.getElementById('feeMonthInput').value || '2026-11';
+async function saveSnapshotForCurrentMonth() {
+  const monthKey = document.getElementById('feeMonthInput').value || getCurrentMonthStr();
+  const ok = await showConfirmModal({
+    title: `Save Monthly Snapshot (${monthKey})?`,
+    message: `Kya aap ${monthKey} ke fees, salaries aur expenses ka financial snapshot IndexedDB mein save/update karna chahte hain?`,
+    confirmText: 'Haan, Snapshot Save Karein',
+    variant: 'primary'
+  });
+  if (!ok) return;
+
   const m = getMonthMetrics(monthKey);
   if (!state.snapshots) state.snapshots = {};
   state.snapshots[monthKey] = {
@@ -53,15 +61,15 @@ function saveSnapshotForCurrentMonth() {
     expenses: m.monthExpenses,
     netProfit: m.netProfit,
     activeStudents: m.activeCount,
-    savedAt: new Date().toISOString().slice(0, 10)
+    savedAt: getTodayDateStr()
   };
-  saveState();
+  await saveState();
   renderAll();
   showToast(`Monthly Snapshot (${monthKey}) saved in IndexedDB!`);
 }
 
 document.getElementById('btnAddExpense').addEventListener('click', () => {
-  const date = document.getElementById('expDateInput').value || '2026-11-10';
+  const date = document.getElementById('expDateInput').value || getTodayDateStr();
   const title = document.getElementById('expTitleInput').value.trim();
   const category = document.getElementById('expCategoryInput').value;
   const amount = Number(document.getElementById('expAmountInput').value) || 0;
@@ -74,11 +82,20 @@ document.getElementById('btnAddExpense').addEventListener('click', () => {
   showToast('Expense added to IndexedDB!');
 });
 
-document.getElementById('expensesTableBody').addEventListener('click', (e) => {
+document.getElementById('expensesTableBody').addEventListener('click', async (e) => {
   const btn = e.target.closest('button[data-action="del-exp"]');
   if (!btn) return;
-  state.expenses = state.expenses.filter(x => x.id !== btn.getAttribute('data-id'));
-  saveState();
+  const id = btn.getAttribute('data-id');
+  const item = (state.expenses || []).find(x => x.id === id);
+  const ok = await showConfirmModal({
+    title: 'Delete Expense Entry?',
+    message: `Kya aap "${item ? item.title : 'this expense'}" ko delete karna chahte hain?`,
+    confirmText: 'Haan, Delete Karein',
+    variant: 'danger'
+  });
+  if (!ok) return;
+  state.expenses = state.expenses.filter(x => x.id !== id);
+  await saveState();
   renderAll();
   showToast('Expense deleted.');
 });

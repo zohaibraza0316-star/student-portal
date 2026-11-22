@@ -1,5 +1,5 @@
 // ==========================================
-// TAB 4: MONTHLY FEES, SCREENSHOT QUEUE & MODALS
+// TAB 4: MONTHLY FEES, SCREENSHOT QUEUE & CONFIRM POPUPS
 // ==========================================
 function renderFeesTable() {
   const monthKey = document.getElementById('feeMonthInput').value || getCurrentMonthStr();
@@ -85,75 +85,118 @@ function openProofModal(studentId) {
 
 const feeProofQueueList = document.getElementById('feeProofQueueList');
 if (feeProofQueueList) {
-  feeProofQueueList.addEventListener('click', (e) => {
+  feeProofQueueList.addEventListener('click', async (e) => {
     const btn = e.target.closest('button[data-action]');
     if (!btn) return;
     const action = btn.getAttribute('data-action');
     const id = btn.getAttribute('data-id');
     const monthKey = document.getElementById('feeMonthInput').value || getCurrentMonthStr();
+    const stu = state.students.find(s => s.id === id);
+
     if (action === 'view-proof') {
       openProofModal(id);
     } else if (action === 'approve-fee') {
+      const ok = await showConfirmModal({
+        title: 'Approve Fee Payment?',
+        message: `Kya aap ${stu ? stu.name : 'is student'} ki ${monthKey} ki fee Approve & Paid mark karna chahte hain?`,
+        confirmText: 'Haan, Approve Karein',
+        variant: 'success'
+      });
+      if (!ok) return;
       state.fees[monthKey][id] = {
         ...state.fees[monthKey][id],
         status: 'Paid',
         date: getTodayDateStr()
       };
-      saveState();
+      await saveState();
       renderAll();
       showToast('Fee Approved & Marked Paid!');
     }
   });
 }
 
-document.getElementById('btnMarkAllFeesPaid').addEventListener('click', () => {
+document.getElementById('btnMarkAllFeesPaid').addEventListener('click', async () => {
   const monthKey = document.getElementById('feeMonthInput').value || getCurrentMonthStr();
+  const activeCount = state.students.filter(s => s.status === 'Active').length;
+  const ok = await showConfirmModal({
+    title: 'Mark All Active Students Paid?',
+    message: `Kya aap ${monthKey} ke liye tamaam ${activeCount} active students ki fees Paid mark karna chahte hain?`,
+    confirmText: 'Haan, Sab Paid Karein',
+    variant: 'success'
+  });
+  if (!ok) return;
   if (!state.fees[monthKey]) state.fees[monthKey] = {};
   const today = getTodayDateStr();
   state.students.filter(s => s.status === 'Active').forEach(s => {
     state.fees[monthKey][s.id] = { ...(state.fees[monthKey][s.id] || {}), status: 'Paid', date: today };
   });
-  saveState();
+  await saveState();
   renderAll();
   showToast(`All active students marked Paid for ${monthKey}!`);
 });
 
 document.getElementById('btnCloseScreenshotModal').addEventListener('click', () => document.getElementById('screenshotModal').classList.add('hidden'));
-document.getElementById('btnApproveProofModal').addEventListener('click', () => {
+document.getElementById('btnApproveProofModal').addEventListener('click', async () => {
   if (!activeProofModalContext) return;
   const { studentId, monthKey } = activeProofModalContext;
+  const stu = state.students.find(s => s.id === studentId);
+  const ok = await showConfirmModal({
+    title: 'Approve Fee Screenshot?',
+    message: `Kya aap ${stu ? stu.name : 'student'} ka fee proof (${monthKey}) approve karke Paid mark karna chahte hain?`,
+    confirmText: 'Haan, Approve Karein',
+    variant: 'success'
+  });
+  if (!ok) return;
   state.fees[monthKey][studentId] = { ...state.fees[monthKey][studentId], status: 'Paid', date: getTodayDateStr() };
-  saveState();
+  await saveState();
   renderAll();
   document.getElementById('screenshotModal').classList.add('hidden');
   showToast('Fee Approved!');
 });
-document.getElementById('btnRejectProofModal').addEventListener('click', () => {
+document.getElementById('btnRejectProofModal').addEventListener('click', async () => {
   if (!activeProofModalContext) return;
   const { studentId, monthKey } = activeProofModalContext;
+  const stu = state.students.find(s => s.id === studentId);
+  const ok = await showConfirmModal({
+    title: 'Reject Fee Screenshot?',
+    message: `Kya aap ${stu ? stu.name : 'student'} ka screenshot reject karke fee dobara Pending mark karna chahte hain?`,
+    confirmText: 'Haan, Reject Karein',
+    variant: 'danger'
+  });
+  if (!ok) return;
   state.fees[monthKey][studentId] = { status: 'Pending', date: '' };
-  saveState();
+  await saveState();
   renderAll();
   document.getElementById('screenshotModal').classList.add('hidden');
   showToast('Proof rejected and marked Pending.');
 });
 
-document.getElementById('feesTableBody').addEventListener('click', (e) => {
+document.getElementById('feesTableBody').addEventListener('click', async (e) => {
   const btn = e.target.closest('button[data-action]');
   if (!btn) return;
   const action = btn.getAttribute('data-action');
   const id = btn.getAttribute('data-id');
   const monthKey = document.getElementById('feeMonthInput').value || getCurrentMonthStr();
   if (!state.fees[monthKey]) state.fees[monthKey] = {};
+  const stu = state.students.find(s => s.id === id);
 
   if (action === 'view-proof') openProofModal(id);
   else if (action === 'toggle-fee') {
     const cur = state.fees[monthKey][id] || { status: 'Pending', date: '' };
-    state.fees[monthKey][id] = cur.status === 'Paid' ? { status: 'Pending', date: '' } : { ...cur, status: 'Paid', date: getTodayDateStr() };
-    saveState();
+    const becomingPending = cur.status === 'Paid';
+    const ok = await showConfirmModal({
+      title: becomingPending ? 'Mark Fee Pending?' : 'Approve & Mark Fee Paid?',
+      message: becomingPending
+        ? `Kya aap ${stu ? stu.name : 'student'} ki ${monthKey} ki Paid fee wapis Pending karna chahte hain?`
+        : `Kya aap ${stu ? stu.name : 'student'} ki ${monthKey} ki fee Paid approve karna chahte hain?`,
+      confirmText: becomingPending ? 'Haan, Pending Karein' : 'Haan, Paid Karein',
+      variant: becomingPending ? 'danger' : 'success'
+    });
+    if (!ok) return;
+    state.fees[monthKey][id] = becomingPending ? { status: 'Pending', date: '' } : { ...cur, status: 'Paid', date: getTodayDateStr() };
+    await saveState();
     renderAll();
   } else if (action === 'wa-fee-msg') {
-    const stu = state.students.find(s => s.id === id);
     if (!stu) return;
     const rec = state.fees[monthKey][id] || { status: 'Pending', date: '' };
     const curr = stu.currency || 'PKR';
@@ -162,7 +205,6 @@ document.getElementById('feesTableBody').addEventListener('click', (e) => {
       : `*${state.settings.academyName} — FEE REMINDER (${monthKey})*\nStudent: *${stu.name}* (${stu.rollNo})\nFee: *${curr} ${Number(stu.monthlyFee).toLocaleString()}*\n\nNayaPay ID: ${NAYAPAY_DETAILS.nayapayId}\nAccount: ${NAYAPAY_DETAILS.accountNumber}\nIBAN: ${NAYAPAY_DETAILS.iban}`;
     openWhatsAppChat(stu.phone, msg);
   } else if (action === 'fee-slip') {
-    const stu = state.students.find(s => s.id === id);
     if (!stu) return;
     const rec = state.fees[monthKey][id] || { status: 'Pending', date: '—' };
     openBrandedPdfPrintWindow(`Official Fee Invoice (${monthKey})`, `Student: ${stu.name} (${stu.rollNo})`, `
@@ -178,7 +220,6 @@ document.getElementById('feesTableBody').addEventListener('click', (e) => {
   }
 });
 
-// Receipt Modal Close & Filter Listeners
 const btnCloseReceiptModal = document.getElementById('btnCloseReceiptModal');
 if (btnCloseReceiptModal) btnCloseReceiptModal.addEventListener('click', () => document.getElementById('receiptModal').classList.add('hidden'));
 const btnDismissReceiptModal = document.getElementById('btnDismissReceiptModal');

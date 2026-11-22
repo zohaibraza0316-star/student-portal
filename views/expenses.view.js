@@ -6,7 +6,7 @@ mountView(`
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
         <div>
           <label class="block text-xs font-medium text-slate-600">Date *</label>
-          <input id="expDateInput" type="date" value="2026-11-10" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+          <input id="expDateInput" type="date" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
         </div>
         <div>
           <label class="block text-xs font-medium text-slate-600">Expense Title *</label>

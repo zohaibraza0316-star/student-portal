@@ -94,7 +94,7 @@ function openStudentModal(studentId) {
     document.getElementById('studentMeetingLinkInput').value = s.meetingLink || '';
     document.getElementById('studentCurrencyInput').value = s.currency || 'PKR';
     document.getElementById('studentFeeInput').value = s.monthlyFee || 0;
-    document.getElementById('studentJoinDateInput').value = s.joinDate || '2026-11-01';
+    document.getElementById('studentJoinDateInput').value = s.joinDate || getTodayDateStr();
     document.getElementById('studentStatusInput').value = s.status || 'Active';
     document.getElementById('studentNotesInput').value = s.notes || '';
   } else {
@@ -102,11 +102,11 @@ function openStudentModal(studentId) {
     document.getElementById('studentForm').reset();
     document.getElementById('studentIdInput').value = '';
     document.getElementById('studentRollInput').value = `ST-${101 + state.students.length}`;
+    document.getElementById('studentJoinDateInput').value = getTodayDateStr();
   }
   modal.classList.remove('hidden');
 }
 
-// Pagination & Filter Event Listeners
 document.getElementById('studentsPageSizeSelect').addEventListener('change', (e) => {
   studentsPageSize = Number(e.target.value) || 10;
   studentsCurrentPage = 1;
@@ -140,7 +140,6 @@ document.getElementById('btnResetStudentFilters').addEventListener('click', () =
   });
 });
 
-// Modal & Table Action Listeners
 document.getElementById('btnAddStudentTop').addEventListener('click', () => openStudentModal(null));
 document.getElementById('btnCloseStudentModal').addEventListener('click', () => document.getElementById('studentModal').classList.add('hidden'));
 document.getElementById('btnCancelStudentModal').addEventListener('click', () => document.getElementById('studentModal').classList.add('hidden'));
@@ -160,7 +159,7 @@ document.getElementById('studentForm').addEventListener('submit', (e) => {
     meetingLink: document.getElementById('studentMeetingLinkInput').value.trim(),
     currency: document.getElementById('studentCurrencyInput').value,
     monthlyFee: Number(document.getElementById('studentFeeInput').value) || 0,
-    joinDate: document.getElementById('studentJoinDateInput').value,
+    joinDate: document.getElementById('studentJoinDateInput').value || getTodayDateStr(),
     status: document.getElementById('studentStatusInput').value,
     notes: document.getElementById('studentNotesInput').value.trim()
   };
@@ -177,20 +176,27 @@ document.getElementById('studentForm').addEventListener('submit', (e) => {
   showToast('Student saved to IndexedDB!');
 });
 
-document.getElementById('studentsTableBody').addEventListener('click', (e) => {
+document.getElementById('studentsTableBody').addEventListener('click', async (e) => {
   const btn = e.target.closest('button[data-action]');
   if (!btn) return;
   const action = btn.getAttribute('data-action');
   const id = btn.getAttribute('data-id');
+  const stu = state.students.find(s => s.id === id);
+
   if (action === 'edit-student') openStudentModal(id);
   else if (action === 'delete-student') {
-    if (!confirm('Kya aap waqai is student ka record delete karna chahte hain?')) return;
+    const ok = await showConfirmModal({
+      title: 'Delete Student Record?',
+      message: `Kya aap waqai "${stu ? stu.name + ' (' + stu.rollNo + ')' : 'this student'}" ko permanently delete karna chahte hain?`,
+      confirmText: 'Haan, Delete Karein',
+      variant: 'danger'
+    });
+    if (!ok) return;
     state.students = state.students.filter(s => s.id !== id);
-    saveState();
+    await saveState();
     renderAll();
     showToast('Student deleted.');
   } else if (action === 'wa-chat') {
-    const stu = state.students.find(s => s.id === id);
     if (stu) openWhatsAppChat(stu.phone, `Assalam-o-Alaikum ${stu.name}! (${state.settings.academyName})`);
   }
 });

@@ -14,7 +14,7 @@ mountView(`
         </div>
         <div>
           <label class="block text-xs font-medium text-slate-600">Month</label>
-          <input id="salMonth" type="month" value="2026-11" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+          <input id="salMonth" type="month" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
         </div>
         <div>
           <label class="block text-xs font-medium text-slate-600">Total Classes / Hours</label>

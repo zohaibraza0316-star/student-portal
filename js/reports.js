@@ -186,8 +186,8 @@ function buildDetailedAttendanceReportHtml(monthKey, fromDate, toDate, studentFi
 
 function generateSelectedReportHtml(openPdf = false) {
   const type = document.getElementById('repTypeSelect').value;
-  const fromDate = document.getElementById('repFromDate').value || '2026-11-01';
-  const toDate = document.getElementById('repToDate').value || '2026-11-30';
+  const fromDate = document.getElementById('repFromDate').value || getMonthStartDateStr();
+  const toDate = document.getElementById('repToDate').value || getMonthEndDateStr();
   const monthKey = document.getElementById('repMonthInput').value || getCurrentMonthStr();
   const studentFilter = (document.getElementById('repStudentFilter') || {}).value || 'ALL';
   const attMode = (document.getElementById('repAttModeSelect') || {}).value || 'monthly_grid';

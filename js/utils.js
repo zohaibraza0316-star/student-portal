@@ -1,5 +1,5 @@
 // ==========================================
-// SHARED HELPERS, DATE UTILS, METRICS & GALLERY MODAL
+// SHARED HELPERS, DATE UTILS, CONFIRM POPUP & GALLERY MODAL
 // ==========================================
 function formatMoney(amount, currency = 'Rs') {
   if (!isFinancialUnlocked) return '<span class="fin-masked">••••••</span>';
@@ -35,10 +35,36 @@ function getCurrentMonthStr() {
   return getTodayDateStr().slice(0, 7);
 }
 
+function getMonthStartDateStr(monthKey) {
+  const mk = monthKey || getCurrentMonthStr();
+  return `${mk}-01`;
+}
+
+function getMonthEndDateStr(monthKey) {
+  const mk = monthKey || getCurrentMonthStr();
+  const [y, m] = mk.split('-').map(Number);
+  const lastDay = new Date(y, m, 0).getDate();
+  return `${mk}-${String(lastDay).padStart(2, '0')}`;
+}
+
+function getWeekdayShort(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  if (isNaN(d.getTime())) return '';
+  return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getDay()];
+}
+
+function formatReadableDate(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  if (isNaN(d.getTime())) return dateStr || '';
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return `${days[d.getDay()]}, ${String(d.getDate()).padStart(2, '0')} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+
 function getDatesInMonth(monthKey) {
   const [yStr, mStr] = (monthKey || getCurrentMonthStr()).split('-');
-  const y = Number(yStr) || 2026;
-  const m = Number(mStr) || 11;
+  const y = Number(yStr) || new Date().getFullYear();
+  const m = Number(mStr) || (new Date().getMonth() + 1);
   const daysInMonth = new Date(y, m, 0).getDate();
   const dates = [];
   for (let day = 1; day <= daysInMonth; day++) {
@@ -57,11 +83,16 @@ function getDatesInRange(fromDate, toDate) {
   const list = [];
   const cur = new Date(start);
   let safety = 0;
-  while (cur <= end && safety < 62) {
+  while (cur <= end && safety < 93) {
     const y = cur.getFullYear();
     const m = String(cur.getMonth() + 1).padStart(2, '0');
     const d = String(cur.getDate()).padStart(2, '0');
-    list.push({ day: `${cur.getDate()}/${cur.getMonth() + 1}`, key: `${y}-${m}-${d}` });
+    const key = `${y}-${m}-${d}`;
+    list.push({
+      day: `${cur.getDate()}/${cur.getMonth() + 1}`,
+      weekday: getWeekdayShort(key),
+      key
+    });
     cur.setDate(cur.getDate() + 1);
     safety++;
   }
@@ -158,6 +189,70 @@ function getStudentAttendanceStats(studentId, fromDate = null, toDate = null) {
 }
 
 // ==========================================
+// GLOBAL CUSTOM CONFIRMATION POPUP ENGINE
+// ==========================================
+let activeConfirmResolver = null;
+
+function resolveConfirmModal(result) {
+  const modal = document.getElementById('confirmActionModal');
+  if (modal) modal.classList.add('hidden');
+  if (typeof activeConfirmResolver === 'function') {
+    const res = activeConfirmResolver;
+    activeConfirmResolver = null;
+    res(Boolean(result));
+  }
+}
+
+function showConfirmModal(options = {}) {
+  const modal = document.getElementById('confirmActionModal');
+  if (!modal) {
+    return Promise.resolve(window.confirm(options.message || 'Kya aap confirm karte hain?'));
+  }
+
+  const titleEl = document.getElementById('confirmModalTitle');
+  const msgEl = document.getElementById('confirmModalMessage');
+  const iconEl = document.getElementById('confirmModalIcon');
+  const okBtn = document.getElementById('btnConfirmModalOk');
+  const cancelBtn = document.getElementById('btnConfirmModalCancel');
+
+  const variant = options.variant || 'danger'; // 'danger' | 'success' | 'primary'
+  if (titleEl) titleEl.textContent = options.title || 'Confirm Karein';
+  if (msgEl) msgEl.textContent = options.message || 'Kya aap waqai ye action perform karna chahte hain?';
+  if (cancelBtn) cancelBtn.textContent = options.cancelText || 'Nahi (Cancel)';
+  if (okBtn) okBtn.textContent = options.confirmText || 'Haan, Confirm';
+
+  if (variant === 'success') {
+    if (iconEl) {
+      iconEl.textContent = '✅';
+      iconEl.className = 'w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg font-bold shrink-0';
+    }
+    if (okBtn) okBtn.className = 'px-5 py-2 rounded-lg text-xs sm:text-sm font-bold bg-emerald-600 text-white hover:bg-emerald-700 transition shadow-sm';
+  } else if (variant === 'primary') {
+    if (iconEl) {
+      iconEl.textContent = '❓';
+      iconEl.className = 'w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg font-bold shrink-0';
+    }
+    if (okBtn) okBtn.className = 'px-5 py-2 rounded-lg text-xs sm:text-sm font-bold bg-indigo-600 text-white hover:bg-indigo-700 transition shadow-sm';
+  } else {
+    if (iconEl) {
+      iconEl.textContent = '⚠️';
+      iconEl.className = 'w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg font-bold shrink-0';
+    }
+    if (okBtn) okBtn.className = 'px-5 py-2 rounded-lg text-xs sm:text-sm font-bold bg-rose-600 text-white hover:bg-rose-700 transition shadow-sm';
+  }
+
+  modal.classList.remove('hidden');
+  return new Promise((resolve) => {
+    activeConfirmResolver = resolve;
+  });
+}
+
+const btnConfirmModalOk = document.getElementById('btnConfirmModalOk');
+if (btnConfirmModalOk) btnConfirmModalOk.addEventListener('click', () => resolveConfirmModal(true));
+const btnConfirmModalCancel = document.getElementById('btnConfirmModalCancel');
+if (btnConfirmModalCancel) btnConfirmModalCancel.addEventListener('click', () => resolveConfirmModal(false));
+
+// ==========================================
 // MULTI-IMAGE GALLERY MODAL ENGINE
 // ==========================================
 function renderActiveGallerySlide() {
@@ -207,7 +302,6 @@ function openImageGalleryModal(images, title, note, showAdminBtns = false) {
   document.getElementById('screenshotModal').classList.remove('hidden');
 }
 
-// Gallery Navigation Controls
 const btnGalleryPrev = document.getElementById('btnGalleryPrev');
 if (btnGalleryPrev) {
   btnGalleryPrev.addEventListener('click', () => {

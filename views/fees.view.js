@@ -10,7 +10,7 @@ mountView(`
       <div class="flex flex-wrap items-center gap-3">
         <div>
           <label for="feeMonthInput" class="block text-xs font-semibold text-slate-500 uppercase">Billing Month</label>
-          <input id="feeMonthInput" type="month" value="2026-11" class="mt-1 px-3 py-1.5 rounded-lg border border-slate-300 text-sm" />
+          <input id="feeMonthInput" type="month" class="mt-1 px-3 py-1.5 rounded-lg border border-slate-300 text-sm" />
         </div>
         <div>
           <label for="filterFeeStatusSelect" class="block text-xs font-semibold text-slate-500 uppercase">Payment Filter</label>

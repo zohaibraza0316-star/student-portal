@@ -1,6 +1,8 @@
 // ==========================================
-// TAB 8: STUDENT REPORT & PAYMENT PROOF MANAGER (DAY-BY-DAY + MULTI-PHOTOS)
+// TAB 8: STUDENT REPORT & PAYMENT PROOF MANAGER (DATE-WISE ATTENDANCE TABLE + MULTI-PHOTOS)
 // ==========================================
+let parentAttListFilter = 'ALL'; // 'ALL' | 'MARKED' | 'ABSENT_LEAVE'
+
 function populateParentStudentDropdown() {
   const sel = document.getElementById('parentPortalStudentSelect');
   if (!sel) return;
@@ -17,19 +19,32 @@ function getStudentDailyAttendanceInRange(studentId, fromDate, toDate) {
     if (st === 'Present') p++;
     else if (st === 'Absent') a++;
     else if (st === 'Leave') l++;
-    return { date: d.key, label: d.day, status: st };
+    return { date: d.key, label: d.day, weekday: d.weekday, status: st };
   });
   const marked = p + a + l;
   const pct = marked > 0 ? Math.round((p / marked) * 100) : 100;
   return { details, p, a, l, marked, pct };
 }
 
+function formatAttStatusBadgeHtml(status) {
+  if (status === 'Present') {
+    return '<span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">✅ Present (Hazir)</span>';
+  }
+  if (status === 'Absent') {
+    return '<span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">❌ Absent (Ghair Hazir)</span>';
+  }
+  if (status === 'Leave') {
+    return '<span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">🟡 Leave (Chutti)</span>';
+  }
+  return '<span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-500">— Not Marked</span>';
+}
+
 function renderStudentDateRangeReport() {
   const sel = document.getElementById('parentPortalStudentSelect');
   if (!sel) return;
   const stuId = sel.value;
-  const fromDate = document.getElementById('parentFromDate').value || '2026-11-01';
-  const toDate = document.getElementById('parentToDate').value || '2026-11-30';
+  const fromDate = document.getElementById('parentFromDate').value || getMonthStartDateStr();
+  const toDate = document.getElementById('parentToDate').value || getMonthEndDateStr();
   const box = document.getElementById('parentReportResult');
   const stu = state.students.find(s => s.id === stuId);
   if (!stu) return;
@@ -42,6 +57,12 @@ function renderStudentDateRangeReport() {
 
   const rangeSabaq = (state.sabaqLogs || []).filter(l => l.studentId === stu.id && l.date >= fromDate && l.date <= toDate);
   const att = getStudentDailyAttendanceInRange(stu.id, fromDate, toDate);
+
+  const visibleAttRows = att.details.filter(d => {
+    if (parentAttListFilter === 'MARKED') return Boolean(d.status);
+    if (parentAttListFilter === 'ABSENT_LEAVE') return d.status === 'Absent' || d.status === 'Leave';
+    return true;
+  });
 
   box.innerHTML = `
     <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50 space-y-4">
@@ -74,7 +95,7 @@ function renderStudentDateRangeReport() {
           <p class="text-lg font-bold text-indigo-600 mt-1">${att.pct}% (${att.p}/${att.marked})</p>
         </div>
         <div class="p-3 rounded-xl bg-white border border-slate-200">
-          <span class="text-xs text-slate-500">Present / Absent / Leave</span>
+          <span class="text-xs text-slate-500">Hazir / Ghair Hazir / Chutti</span>
           <p class="text-sm font-bold text-slate-800 mt-2">✅ ${att.p} &nbsp; ❌ ${att.a} &nbsp; 🟡 ${att.l}</p>
         </div>
         <div class="p-3 rounded-xl bg-white border border-slate-200">
@@ -87,21 +108,42 @@ function renderStudentDateRangeReport() {
         </div>
       </div>
 
-      <!-- Day-by-Day Attendance Detail Grid -->
-      <div class="p-4 rounded-xl bg-white border border-slate-200 space-y-2">
-        <h4 class="text-xs font-bold text-slate-700 uppercase">📅 Day-by-Day Attendance Detail (${escapeHtml(fromDate)} to ${escapeHtml(toDate)})</h4>
-        <div class="flex flex-wrap gap-1.5">
-          ${att.details.map(d => {
-            const cls = d.status === 'Present'
-              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-              : d.status === 'Absent'
-                ? 'bg-rose-50 text-rose-700 border-rose-200'
-                : d.status === 'Leave'
-                  ? 'bg-amber-50 text-amber-800 border-amber-200'
-                  : 'bg-slate-50 text-slate-400 border-slate-200';
-            const code = d.status === 'Present' ? 'P' : d.status === 'Absent' ? 'A' : d.status === 'Leave' ? 'L' : '—';
-            return `<div class="px-2 py-1 rounded-lg border text-[11px] font-semibold ${cls}" title="${escapeHtml(d.date)}: ${escapeHtml(d.status || 'Not Marked')}">${escapeHtml(d.label)}: <strong>${code}</strong></div>`;
-          }).join('')}
+      <!-- FULL DATE-WISE ATTENDANCE TABLE (Har Din ki Hazri Detail) -->
+      <div class="rounded-xl bg-white border border-slate-200 overflow-hidden">
+        <div class="p-3.5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h4 class="text-xs font-bold text-slate-800 uppercase">📅 Date-Wise Attendance Record (${escapeHtml(fromDate)} to ${escapeHtml(toDate)})</h4>
+            <p class="text-[11px] text-slate-500">Har din ka alag record: Student kis tarikh ko Hazir, Ghair Hazir ya Chutti par tha</p>
+          </div>
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" data-att-filter="ALL" class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${parentAttListFilter === 'ALL' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'}">All Days (${att.details.length})</button>
+            <button type="button" data-att-filter="MARKED" class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${parentAttListFilter === 'MARKED' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'}">Marked Only (${att.marked})</button>
+            <button type="button" data-att-filter="ABSENT_LEAVE" class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${parentAttListFilter === 'ABSENT_LEAVE' ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-700'}">Absent / Leave (${att.a + att.l})</button>
+          </div>
+        </div>
+        <div class="overflow-x-auto max-h-[340px] overflow-y-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase sticky top-0">
+                <th class="py-2.5 px-4">#</th>
+                <th class="py-2.5 px-4">Date</th>
+                <th class="py-2.5 px-4">Day</th>
+                <th class="py-2.5 px-4 text-right">Attendance Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 text-xs">
+              ${visibleAttRows.length === 0
+                ? '<tr><td colspan="4" class="py-6 text-center text-slate-400">Is filter mein koi attendance entry nahi mili.</td></tr>'
+                : visibleAttRows.map((d, idx) => `
+                  <tr class="hover:bg-slate-50/80 transition">
+                    <td class="py-2 px-4 text-slate-400 font-semibold">${idx + 1}</td>
+                    <td class="py-2 px-4 font-bold text-slate-800">${escapeHtml(d.date)}</td>
+                    <td class="py-2 px-4 text-slate-600 font-medium">${escapeHtml(d.weekday)}</td>
+                    <td class="py-2 px-4 text-right">${formatAttStatusBadgeHtml(d.status)}</td>
+                  </tr>
+                `).join('')}
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -131,6 +173,14 @@ function renderStudentDateRangeReport() {
       </div>
     </div>
   `;
+
+  // Filter buttons for Date-Wise Attendance Table
+  box.querySelectorAll('button[data-att-filter]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      parentAttListFilter = btn.getAttribute('data-att-filter') || 'ALL';
+      renderStudentDateRangeReport();
+    });
+  });
 
   // Click handler for parent sabaq thumbnails
   box.querySelectorAll('button[data-parent-sabaq-id]').forEach(btn => {
@@ -165,11 +215,15 @@ function renderStudentDateRangeReport() {
 }
 
 document.getElementById('btnParentSearchRoll').addEventListener('click', renderStudentDateRangeReport);
+['parentPortalStudentSelect', 'parentFromDate', 'parentToDate'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('change', renderStudentDateRangeReport);
+});
 
 document.getElementById('btnDownloadStudentPdfReport').addEventListener('click', () => {
   const stuId = document.getElementById('parentPortalStudentSelect').value;
-  const fromDate = document.getElementById('parentFromDate').value || '2026-11-01';
-  const toDate = document.getElementById('parentToDate').value || '2026-11-30';
+  const fromDate = document.getElementById('parentFromDate').value || getMonthStartDateStr();
+  const toDate = document.getElementById('parentToDate').value || getMonthEndDateStr();
   const stu = state.students.find(s => s.id === stuId);
   if (!stu) return;
   const monthKey = fromDate.slice(0, 7) || getCurrentMonthStr();
@@ -177,20 +231,45 @@ document.getElementById('btnDownloadStudentPdfReport').addEventListener('click',
   const rangeSabaq = (state.sabaqLogs || []).filter(l => l.studentId === stu.id && l.date >= fromDate && l.date <= toDate);
   const att = getStudentDailyAttendanceInRange(stu.id, fromDate, toDate);
 
-  const dayChipsHtml = att.details.map(d => {
-    const bg = d.status === 'Present' ? '#dcfce7;color:#166534' : d.status === 'Absent' ? '#ffe4e6;color:#be123c' : d.status === 'Leave' ? '#fef3c7;color:#b45309' : '#f8fafc;color:#94a3b8';
-    const code = d.status === 'Present' ? 'P' : d.status === 'Absent' ? 'A' : d.status === 'Leave' ? 'L' : '-';
-    return `<span style="display:inline-block;margin:2px;padding:3px 6px;border:1px solid #cbd5e1;border-radius:4px;font-size:10px;background:${bg};"><strong>${escapeHtml(d.label)}</strong>: ${code}</span>`;
-  }).join('');
+  // Two-column compact Date-Wise Attendance Table for clean printable PDF
+  const half = Math.ceil(att.details.length / 2);
+  let attRowsPdf = '';
+  for (let i = 0; i < half; i++) {
+    const left = att.details[i];
+    const right = att.details[i + half];
+    const fmt = (st) => st === 'Present'
+      ? '<span class="att-pill-p">Present (Hazir)</span>'
+      : st === 'Absent'
+        ? '<span class="att-pill-a">Absent (Ghair Hazir)</span>'
+        : st === 'Leave'
+          ? '<span class="att-pill-l">Leave (Chutti)</span>'
+          : '<span style="color:#94a3b8;">— Not Marked</span>';
+    attRowsPdf += `
+      <tr>
+        <td><strong>${escapeHtml(left.date)}</strong></td>
+        <td>${escapeHtml(left.weekday)}</td>
+        <td>${fmt(left.status)}</td>
+        ${right ? `<td><strong>${escapeHtml(right.date)}</strong></td><td>${escapeHtml(right.weekday)}</td><td>${fmt(right.status)}</td>` : '<td></td><td></td><td></td>'}
+      </tr>
+    `;
+  }
 
   const html = `
     <div class="summary-grid">
       <div class="summary-card"><strong>Student:</strong> ${escapeHtml(stu.name)} (${escapeHtml(stu.rollNo)})<br><strong>Father:</strong> ${escapeHtml(stu.fatherName || '—')}<br><strong>Course:</strong> ${escapeHtml(stu.subjects)}</div>
-      <div class="summary-card"><strong>Attendance:</strong> ${att.pct}% (${att.p}P / ${att.a}A / ${att.l}L)<br><strong>Batch:</strong> ${escapeHtml(stu.className)}<br><strong>Class Time:</strong> ${escapeHtml(stu.classTime || '—')}</div>
+      <div class="summary-card"><strong>Attendance:</strong> ${att.pct}% (${att.p} Present / ${att.a} Absent / ${att.l} Leave)<br><strong>Batch:</strong> ${escapeHtml(stu.className)}<br><strong>Class Time:</strong> ${escapeHtml(stu.classTime || '—')}</div>
       <div class="summary-card"><strong>Monthly Fee (${monthKey}):</strong> ${escapeHtml(stu.currency || 'PKR')} ${Number(stu.monthlyFee).toLocaleString()}<br><strong>Status:</strong> ${escapeHtml(feeRec.status)}<br><strong>Paid Date:</strong> ${escapeHtml(feeRec.date || '—')}</div>
     </div>
-    <h3 style="font-size:13px;margin:14px 0 6px 0;color:#1e1b4b;">Day-by-Day Attendance Detail (${escapeHtml(fromDate)} to ${escapeHtml(toDate)})</h3>
-    <div style="padding:8px;border:1px solid #cbd5e1;border-radius:8px;margin-bottom:14px;">${dayChipsHtml}</div>
+    <h3 style="font-size:13px;margin:14px 0 6px 0;color:#1e1b4b;">Date-Wise Attendance Detail (${escapeHtml(fromDate)} to ${escapeHtml(toDate)})</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th><th>Day</th><th>Status</th>
+          <th>Date</th><th>Day</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody>${attRowsPdf || '<tr><td colspan="6">No dates in selected range.</td></tr>'}</tbody>
+    </table>
     <h3 style="font-size:13px;margin:14px 0 6px 0;color:#1e1b4b;">Lessons, Sabaq &amp; Progress Logs</h3>
     <table>
       <thead><tr><th>Date</th><th>Category</th><th>Lesson / Sabaq Details</th><th>Sabqi / Revision</th><th>Performance</th><th>Photos</th></tr></thead>
@@ -211,5 +290,5 @@ document.getElementById('btnDownloadStudentPdfReport').addEventListener('click',
       </tbody>
     </table>
   `;
-  openBrandedPdfPrintWindow(`Student Detailed Progress, Attendance & Fee Report`, `Period: ${fromDate} to ${toDate}`, html, false);
+  openBrandedPdfPrintWindow(`Student Detailed Date-Wise Attendance & Progress Report`, `Period: ${fromDate} to ${toDate}`, html, false);
 });

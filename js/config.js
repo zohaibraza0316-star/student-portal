@@ -29,6 +29,9 @@ let currentReceiptText = '';
 let pendingSabaqImages = [];
 let activeGalleryImages = [];
 let activeGalleryIndex = 0;
+let isCompressingSabaqPhotos = false;
+let activeExistingSabaqPhotoId = null;
+let lastSyncedTodayStr = '';
 
 const defaultSampleData = {
   students: [

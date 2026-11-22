@@ -40,16 +40,34 @@ document.getElementById('btnAddDemo').addEventListener('click', () => {
   showToast('Trial class added!');
 });
 
-document.getElementById('demosTableBody').addEventListener('click', (e) => {
+document.getElementById('demosTableBody').addEventListener('click', async (e) => {
   const btn = e.target.closest('button[data-action]');
   if (!btn) return;
   const action = btn.getAttribute('data-action');
   const id = btn.getAttribute('data-id');
   const d = state.demos.find(x => x.id === id);
   if (!d) return;
-  if (action === 'delete-demo') state.demos = state.demos.filter(x => x.id !== id);
-  else if (action === 'wa-demo-msg') openWhatsAppChat(d.phone, `Assalam-o-Alaikum ${d.name}! Your trial class at ${state.settings.academyName} is scheduled for ${d.dateTime}.`);
-  else if (action === 'convert-demo') {
+
+  if (action === 'delete-demo') {
+    const ok = await showConfirmModal({
+      title: 'Delete Trial / Demo Class?',
+      message: `Kya aap "${d.name}" ki demo class entry delete karna chahte hain?`,
+      confirmText: 'Haan, Delete Karein',
+      variant: 'danger'
+    });
+    if (!ok) return;
+    state.demos = state.demos.filter(x => x.id !== id);
+  } else if (action === 'wa-demo-msg') {
+    openWhatsAppChat(d.phone, `Assalam-o-Alaikum ${d.name}! Your trial class at ${state.settings.academyName} is scheduled for ${d.dateTime}.`);
+    return;
+  } else if (action === 'convert-demo') {
+    const ok = await showConfirmModal({
+      title: 'Enroll Demo Student?',
+      message: `Kya aap "${d.name}" ko Active Student ke taur par Students Directory mein enroll karna chahte hain?`,
+      confirmText: 'Haan, Enroll Karein',
+      variant: 'success'
+    });
+    if (!ok) return;
     state.students.push({
       id: 'stu_' + Date.now(),
       rollNo: `ST-${101 + state.students.length}`,
@@ -62,13 +80,13 @@ document.getElementById('demosTableBody').addEventListener('click', (e) => {
       meetingLink: '',
       currency: 'PKR',
       monthlyFee: 3000,
-      joinDate: '2026-11-10',
+      joinDate: getTodayDateStr(),
       status: 'Active',
       notes: ''
     });
     d.status = 'Converted (Enrolled)';
     showToast(`${d.name} enrolled as Active Student!`);
   }
-  saveState();
+  await saveState();
   renderAll();
 });

@@ -2,7 +2,7 @@
 // RAZA TUTORS — 100% OFFLINE-FIRST SERVICE WORKER
 // Zero external CDN dependencies • GitHub Pages subpath safe
 // ==========================================
-const CACHE_NAME = 'raza-tutors-offline-pwa-v5.0';
+const CACHE_NAME = 'raza-tutors-offline-pwa-v5.1';
 
 const PRECACHE_ASSETS = [
   "./",

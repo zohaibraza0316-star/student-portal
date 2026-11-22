@@ -29,7 +29,7 @@ function renderSalariesTable() {
 document.getElementById('btnAddSalary').addEventListener('click', () => {
   const name = document.getElementById('salTeacherName').value.trim();
   const phone = document.getElementById('salTeacherPhone').value.trim();
-  const month = document.getElementById('salMonth').value || '2026-11';
+  const month = document.getElementById('salMonth').value || getCurrentMonthStr();
   const classes = document.getElementById('salClasses').value.trim();
   const amount = Number(document.getElementById('salAmount').value) || 0;
   if (!name || !amount) return showToast('Enter Teacher Name & Salary!');
@@ -43,16 +43,37 @@ document.getElementById('btnAddSalary').addEventListener('click', () => {
   showToast('Salary record saved!');
 });
 
-document.getElementById('salariesTableBody').addEventListener('click', (e) => {
+document.getElementById('salariesTableBody').addEventListener('click', async (e) => {
   const btn = e.target.closest('button[data-action]');
   if (!btn) return;
   const action = btn.getAttribute('data-action');
   const id = btn.getAttribute('data-id');
   const item = state.salaries.find(x => x.id === id);
   if (!item) return;
-  if (action === 'toggle-sal-status') item.status = item.status === 'Paid' ? 'Pending' : 'Paid';
-  else if (action === 'delete-sal') state.salaries = state.salaries.filter(x => x.id !== id);
-  else if (action === 'wa-sal-slip') openWhatsAppChat(item.phone, `*SALARY SLIP (${item.month})*\nTeacher: ${item.name}\nAmount: Rs ${Number(item.amount).toLocaleString()}\nStatus: ${item.status}`);
-  saveState();
+
+  if (action === 'toggle-sal-status') {
+    const nextStatus = item.status === 'Paid' ? 'Pending' : 'Paid';
+    const ok = await showConfirmModal({
+      title: `Mark Salary ${nextStatus}?`,
+      message: `Kya aap ${item.name} (${item.month}) ki salary "${nextStatus}" mark karna chahte hain?`,
+      confirmText: `Haan, ${nextStatus} Karein`,
+      variant: nextStatus === 'Paid' ? 'success' : 'danger'
+    });
+    if (!ok) return;
+    item.status = nextStatus;
+  } else if (action === 'delete-sal') {
+    const ok = await showConfirmModal({
+      title: 'Delete Salary Record?',
+      message: `Kya aap ${item.name} (${item.month}) ka salary record delete karna chahte hain?`,
+      confirmText: 'Haan, Delete Karein',
+      variant: 'danger'
+    });
+    if (!ok) return;
+    state.salaries = state.salaries.filter(x => x.id !== id);
+  } else if (action === 'wa-sal-slip') {
+    openWhatsAppChat(item.phone, `*SALARY SLIP (${item.month})*\nTeacher: ${item.name}\nAmount: Rs ${Number(item.amount).toLocaleString()}\nStatus: ${item.status}`);
+    return;
+  }
+  await saveState();
   renderAll();
 });

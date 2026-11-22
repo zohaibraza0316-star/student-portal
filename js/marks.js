@@ -43,11 +43,20 @@ document.getElementById('btnAddMarkRecord').addEventListener('click', () => {
   showToast('Evaluation saved!');
 });
 
-document.getElementById('marksTableBody').addEventListener('click', (e) => {
+document.getElementById('marksTableBody').addEventListener('click', async (e) => {
   const btn = e.target.closest('button[data-action="delete-mark"]');
   if (!btn) return;
-  state.marks = state.marks.filter(m => m.id !== btn.getAttribute('data-id'));
-  saveState();
+  const id = btn.getAttribute('data-id');
+  const item = (state.marks || []).find(m => m.id === id);
+  const ok = await showConfirmModal({
+    title: 'Delete Test Evaluation?',
+    message: `Kya aap "${item ? item.testTitle : 'this test result'}" delete karna chahte hain?`,
+    confirmText: 'Haan, Delete Karein',
+    variant: 'danger'
+  });
+  if (!ok) return;
+  state.marks = state.marks.filter(m => m.id !== id);
+  await saveState();
   renderMarksSection();
   showToast('Evaluation deleted.');
 });

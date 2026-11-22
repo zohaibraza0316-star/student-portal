@@ -1,8 +1,19 @@
 // ==========================================
-// TAB 6: DAILY ATTENDANCE (FILTERS + WA ABSENT ALERT)
+// TAB 6: DAILY ATTENDANCE (AUTO TODAY DATE + FILTERS + CONFIRM POPUP)
 // ==========================================
 function renderAttendanceTable() {
-  const dateKey = document.getElementById('attendanceDateInput').value || getTodayDateStr();
+  const dateInput = document.getElementById('attendanceDateInput');
+  const todayStr = getTodayDateStr();
+  if (dateInput && !dateInput.value) dateInput.value = todayStr;
+  const dateKey = (dateInput && dateInput.value) || todayStr;
+
+  const todayLbl = document.getElementById('attendanceTodayLabel');
+  if (todayLbl) {
+    todayLbl.textContent = dateKey === todayStr
+      ? `📅 Aaj ki Date: ${formatReadableDate(dateKey)} (Today)`
+      : `Selected Date: ${formatReadableDate(dateKey)}`;
+  }
+
   const batchFilter = (document.getElementById('attBatchFilter') || {}).value || 'ALL';
   const searchQ = ((document.getElementById('attSearchInput') || {}).value || '').trim().toLowerCase();
 
@@ -47,6 +58,17 @@ function renderAttendanceTable() {
 }
 
 document.getElementById('attendanceDateInput').addEventListener('change', renderAll);
+
+const btnAttJumpToday = document.getElementById('btnAttJumpToday');
+if (btnAttJumpToday) {
+  btnAttJumpToday.addEventListener('click', () => {
+    const today = getTodayDateStr();
+    document.getElementById('attendanceDateInput').value = today;
+    renderAll();
+    showToast(`Attendance date set to Today (${formatReadableDate(today)})!`);
+  });
+}
+
 const attBatchFilter = document.getElementById('attBatchFilter');
 if (attBatchFilter) attBatchFilter.addEventListener('change', renderAttendanceTable);
 const attSearchInput = document.getElementById('attSearchInput');
@@ -65,11 +87,19 @@ if (btnOpenMonthlyAttReport) {
   });
 }
 
-document.getElementById('btnMarkAllPresent').addEventListener('click', () => {
+document.getElementById('btnMarkAllPresent').addEventListener('click', async () => {
   const dateKey = document.getElementById('attendanceDateInput').value || getTodayDateStr();
+  const activeCount = state.students.filter(s => s.status === 'Active').length;
+  const ok = await showConfirmModal({
+    title: 'Mark All Present?',
+    message: `Kya aap ${dateKey} ke liye tamaam ${activeCount} active students ko Present mark karna chahte hain?`,
+    confirmText: 'Haan, Mark All Present',
+    variant: 'success'
+  });
+  if (!ok) return;
   if (!state.attendance[dateKey]) state.attendance[dateKey] = {};
   state.students.filter(s => s.status === 'Active').forEach(s => { state.attendance[dateKey][s.id] = 'Present'; });
-  saveState();
+  await saveState();
   renderAll();
   showToast(`All active students marked Present for ${dateKey}!`);
 });

@@ -1,5 +1,5 @@
 mountView(`
-  <!-- TAB 2: SABAQ & TIMETABLE (WITH MULTIPLE SCREENSHOTS & FILTERS) -->
+  <!-- TAB 2: SABAQ & TIMETABLE (BULLETPROOF MULTIPLE SCREENSHOTS & FILTERS) -->
   <section id="viewSabaq" class="hidden space-y-4">
     <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
       <div class="flex flex-wrap items-center justify-between gap-2">
@@ -12,13 +12,13 @@ mountView(`
     <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
       <div class="flex flex-wrap items-center justify-between gap-2">
         <h2 class="text-sm font-bold text-slate-800 uppercase">Record Daily Sabaq, Kalma, Dua &amp; Multiple Screenshots</h2>
-        <span id="sabaqSelectedCountBadge" class="hidden px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">0 files selected</span>
+        <span id="sabaqSelectedCountBadge" class="hidden px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">0 photos selected</span>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <div>
           <label class="block text-xs font-medium text-slate-600">Date</label>
-          <input id="sabaqDateInput" type="date" value="2026-11-22" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+          <input id="sabaqDateInput" type="date" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
         </div>
         <div>
           <label class="block text-xs font-medium text-slate-600">Select Student *</label>
@@ -42,11 +42,6 @@ mountView(`
           <input id="sabaqRevisionInput" type="text" placeholder="e.g. Para 1" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
         </div>
         <div>
-          <label class="block text-xs font-medium text-slate-600">Upload Multiple Screenshots (IndexedDB)</label>
-          <input id="sabaqProofFile" type="file" accept="image/*" multiple class="mt-1 w-full text-xs text-slate-500 file:py-1.5 file:px-2.5 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700" />
-          <p class="text-[10px] text-slate-400 mt-0.5">Ek saath ya baari-baari multiple photos select kar sakte hain</p>
-        </div>
-        <div>
           <label class="block text-xs font-medium text-slate-600">Performance</label>
           <select id="sabaqRatingSelect" class="mt-1 w-full px-3 py-2 rounded-lg border border-slate-300 text-sm bg-white">
             <option value="MashaAllah Excellent">MashaAllah Excellent</option>
@@ -54,18 +49,37 @@ mountView(`
             <option value="Needs Practice">Needs Practice</option>
           </select>
         </div>
-        <div class="flex items-end">
-          <button id="btnAddSabaqRecord" type="button" class="w-full px-4 py-2 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition">
+        <div class="sm:col-span-2 flex items-end gap-2">
+          <div id="sabaqDropzone" class="flex-1 p-2 rounded-xl border-2 border-slate-300 bg-slate-50 flex flex-wrap items-center justify-between gap-2 transition">
+            <div class="text-xs text-slate-600 pl-1">
+              <strong class="text-indigo-700">📷 Multiple Screenshots:</strong> Ek saath ya baari-baari photos add karein
+            </div>
+            <label for="sabaqProofFile" class="cursor-pointer px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white hover:bg-indigo-700 transition">
+              + Select Photos (Multiple)
+              <input id="sabaqProofFile" type="file" accept="image/*" multiple class="hidden" />
+            </label>
+          </div>
+          <button id="btnAddSabaqRecord" type="button" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-emerald-600 text-white hover:bg-emerald-700 transition shadow-sm whitespace-nowrap">
             + Save Sabaq
           </button>
         </div>
       </div>
 
+      <!-- Hidden input for adding extra screenshots to an already saved Sabaq log -->
+      <input id="sabaqAddMoreExistingFile" type="file" accept="image/*" multiple class="hidden" />
+
       <!-- Live Multiple Screenshot Preview Strip -->
       <div id="sabaqPendingPreviewBox" class="hidden p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-wrap items-center justify-between gap-2">
           <span class="text-xs font-bold text-slate-700">📷 Selected Screenshots Preview (Ready to Save)</span>
-          <button id="btnClearSabaqPendingImgs" type="button" class="text-xs font-semibold text-rose-600 hover:underline">Clear All Photos</button>
+          <div class="flex items-center gap-2">
+            <button id="btnAddAnotherSabaqPhoto" type="button" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100">
+              + Add More Photos
+            </button>
+            <button id="btnClearSabaqPendingImgs" type="button" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-rose-50 text-rose-700 hover:bg-rose-100">
+              Clear All
+            </button>
+          </div>
         </div>
         <div id="sabaqPendingPreviewList" class="flex flex-wrap gap-2"></div>
       </div>
